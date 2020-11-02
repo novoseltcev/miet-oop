@@ -14,3 +14,4 @@ Lab_4.vcxproj.filters
 .vs/Lab_4/v16/.suo
 .vs/Lab_4/v16/Browse.VC.db
 *.db
+*.ipch
