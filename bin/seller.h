@@ -37,7 +37,7 @@ public:
 	friend seller& operator>> (std::istream&, seller&);
 };
 
-class seller_impl final: protected seller
+class seller_impl final: public seller
 {
 public:
 	seller_impl() :

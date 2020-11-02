@@ -10,8 +10,8 @@
 class common
 {
 protected:
-	double balance__{};
-	class date date__{};
+	double balance__;
+	class date date__;
 	
 public:
 	
@@ -42,25 +42,6 @@ public:
 	friend bool operator==(common&, common&);
 
 	friend bool operator!=(common&, common&);
-
-	template<typename T>
-	friend bool operator==(T&, date&);
-
-	template<typename T>
-	friend bool operator!=(T&, date&);
-
-	template<typename T>
-	friend bool operator< (T&, ::date&);
-
-	template<typename T>
-	friend bool operator<=(T&, date&);
-
-	template<typename T>
-	friend bool operator>(T&, date&);
-
-	template<typename T>
-	friend bool operator>=(T&, date&);
-
-	static std::vector<std::string> split(const std::string&, const std::string&);
 	
+	static std::vector<std::string> split(const std::string&, const std::string&);
 };

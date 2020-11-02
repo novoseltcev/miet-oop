@@ -2,23 +2,35 @@
 #include <list>
 using namespace std;
 
-//Локализация для продавца
-/*template <typename T>
-data_base<T> search(data_base<T>& val_data_base)
+data_base<supplier> search(data_base<supplier>& val_data_base)
 {
-	data_base<T> copied_data_base;
-	val_data_base.get();
-	string val_company;
+	data_base<supplier> copied_data_base;
+	auto cur_db = val_data_base.get();
+	
+	string v_company;
 	cout << "Введите фирму поставщика: ";
-	input_string(val_company, 24);
-	for (auto i : val_data_base.get())
-	{
-		if (i.get_company() == val_company) { copied_data_base.push_back(i); }
+	input_string(v_company, 24);
+	for (auto sup_obj : cur_db) {
+		auto cur_company = sup_obj.get_company();
+			if (cur_company == v_company) { copied_data_base.push_back(sup_obj); }
 	}
 	return copied_data_base;
-}*/
+}
 
-//функционльное програмирование
+data_base<seller> search(data_base<seller>& val_data_base)
+{
+	data_base<seller> copied_data_base;
+	auto cur_db = val_data_base.get();
+	
+	person v_person;
+	cin >> v_person;
+	for (auto sel_obj : cur_db) {
+		auto per_obj = sel_obj.get_person();
+		if (per_obj == v_person) { copied_data_base.push_back(sel_obj); }
+	}
+	return copied_data_base;
+}
+
 template <typename T>
 void data_base<T>::load(const string& filename)
 {
@@ -32,60 +44,12 @@ void data_base<T>::load(const string& filename)
 	}
 	else
 	{
-		auto* buff2 = new char[100];
-		fp.getline(buff2, 100);
-
-		const auto val_count = stoi(buff2);
-		if (val_count == 0) { fp.close(); }
-		else
-		{
-			const auto is_supplier = typeid(T) == typeid(supplier);
-			const auto is_seller = typeid(T) == typeid(seller);
-			if (is_supplier)
-			{
-				supplier_impl n_obj;
-				for (auto i = 1; i <= val_count; i++)
-				{
-					fp >> n_obj;
-					T t_obj = n_obj.get();
-					push_back(t_obj);
-				}
-			}
-			else
-			{
-				if (is_seller)
-				{
-					//seller_impl n_obj;
-					for (auto i = 1; i <= val_count; i++)
-					{
-						//fp >> n_obj;
-						//T t_obj = n_obj.get();
-						//push_back(t_obj);
-					}
-				}
-				else
-				{
-					auto out_str = new string[3]
-					{
-						"список эл-ов типа ",
-						typeid(T).name(),
-						" не поддерживается классом"
-					};
-					throw new exception((out_str[0] + out_str[1] + out_str[2]).c_str());
-				}
-			}
-			fp.close();
-		}
+		fp >> *this;
 	}
 }
 
 template <typename T>
-void data_base<T>::table_line()
-{
-	cout <<
-		"-------------------------|-------------------------|------------------|--------------|----------------------|"
-		<< endl;
-}
+void data_base<T>::table_line() { cout <<"-------------------------|-------------------------|------------------|--------------|----------------------|"<< endl; }
 
 template <typename T>
 void data_base<T>::table_head()
@@ -115,19 +79,19 @@ double data_base<T>::table_body()
 	return sum;
 }
 
-//изменение ширины для продавцов
 template <typename T>
 void data_base<T>::table_end(double sum)
 {
-	const string table_end_text = (typeid(T) == typeid(supplier)) ? "Общая задолженность:" : "Общее сальдо продаж";
+	const string table_end_text = typeid(T) == typeid(supplier) ? "Общая задолженность:" : typeid(T) == typeid(supplier) ? "Общее сальдо продаж" : "";
+	const auto length = typeid(T) == typeid(supplier) ? 83 : typeid(T) == typeid(supplier) ? 92 : 0 ;
 	cout << table_end_text;
 	cout.setf(ios::right | ios::fixed);
 	cout.precision(2);
-	cout.width(83);
+	cout.width(length);
 	cout << sum << "  " << endl;
 	cout.unsetf(ios::right | ios::fixed);
 	cout << "Кол-во товаров в базе: ";
-	cout.width(83);
+	cout.width(length);
 	cout.setf(ios::left);
 	cout << db_.size();
 	cout << "  " << endl;
@@ -138,12 +102,6 @@ void data_base<T>::table_end(double sum)
 template <typename T>
 data_base<T>::data_base(const string& filename)
 {
-	/*if (typeid(T).name() != typeid(supplier).name() 
-		&& typeid(T).name() != typeid(seller).name())
-	{
-		throw new domain_error("функция не адаптирована для списка данного значения");
-	};
-	db_ = new list<T>();*/
 	ifstream fp(filename, ios_base::out);
 	auto start_count = -1;
 	if (!fp.is_open())
@@ -156,7 +114,9 @@ data_base<T>::data_base(const string& filename)
 			system("cls");
 			cout << "Введите кол-во записей: " << start_count << endl;
 			cout << i << " из " << start_count << endl;
-			//cin >> *this;
+			auto t_obj = *new T();
+			cin >> t_obj;
+			push_back(t_obj);
 		}
 	}
 	else
@@ -230,9 +190,9 @@ void data_base<T>::table()
 	if (is_empty())
 	{
 		cout.width(63);
-		const string var = (typeid(T).name() == typeid(supplier).name())
+		const string var = typeid(T).name() == typeid(supplier).name()
 			? "поставщиках."
-			: "продавцах.";
+			: typeid(T).name() == typeid(supplier).name() ? "продавцах." : "текущем типе данных";
 		cout << "В Базе отсутствует информация о "
 			<< var << endl;
 	}
@@ -265,65 +225,58 @@ bool data_base<supplier>::filter_by_type(data_base<supplier>& val_data_base)
 	return (is_empty()) ? true : false;
 }
 
-template <typename T>
-bool data_base<T>::filter_by_data(data_base<T>& val_data_base, class date& val_data, const string& flag)
+
+bool data_base<supplier>::filter_by_data(data_base<supplier>& val_data_base, ::date& val_data, const string& flag)
 {
-	/*if (flag == ">")
+	if (flag == ">")
 	{
-		for (T& i : val_data_base.db_)
+		for (auto& i : val_data_base.db_)
 		{
-			if (i > val_data) { push_back(i); }
+			if (i.get_date() > val_data) { push_back(i); }
 		}
 	}
 	if (flag == ">=")
 	{
-		for (T& i : val_data_base.db_)
+		for (auto& i : val_data_base.db_)
 		{
-			if (i >= val_data) { push_back(i); }
+			if (i.get_date() >= val_data) { push_back(i); }
 		}
 	}
 	if (flag == "==")
 	{
-		for (T& i : val_data_base.db_)
+		for (auto& i : val_data_base.db_)
 		{
-			if (i == val_data) { push_back(i); }
+			if (i.get_date() == val_data) { push_back(i); }
 		}
-	}*/
-	/*if (flag == "<")
+	}
+	if (flag == "<")
 	{
-		for (T& i : val_data_base.get())
+		for (auto& i : val_data_base.get())
 		{
-			if (i < val_data) { push_back(i); }
+			if (i.get_date() < val_data) { push_back(i); }
 		}
-	}*/
-	/*if (flag == "<=")
+	}
+	if (flag == "<=")
 	{
-		for (T& i : val_data_base.db_)
+		for (auto& i : val_data_base.db_)
 		{
-			if (i <= val_data) { push_back(i); }
+			if (i.get_date() <= val_data) { push_back(i); }
 		}
-	}*/
+	}
 	return (is_empty()) ? true : false;
 }
 
-template<typename T>
-bool data_base<T>::set_debtor(class date& val_data)
+bool data_base<supplier>::set_debtor(class date& val_data)
 {
-	if (typeid(T).name() == typeid(supplier).name())
-	{
-		for (auto& obj : db_)
-		{
-			if (obj.get_date() < val_data) { !obj; }
-		}
-		return (is_empty()) ? true : false;
+	for (auto& obj : db_) {
+		if (obj.get_date() < val_data) { !obj; }
 	}
-	else throw new domain_error("НЕ ПОДДЕРЖИВАЕТСЯ!!!");
+	return (is_empty()) ? true : false;
 }
 
 bool data_base<supplier>::search_debtor(data_base<supplier>& val_data_base)
 {
-	for (auto& obj : val_data_base.db_)
-	{
+	for (auto& obj : val_data_base.db_) {
 		if (obj.get_debtor()) { push_back(obj); }
 	}
 	return (is_empty()) ? true : false;
@@ -334,6 +287,49 @@ void data_base<T>::sort(const string& key)
 {
 	if (key == "balance") db_.sort(sort_by_balance<T>);
 	table();
+}
+
+data_base<supplier>& operator>>(istream& lhs, data_base<supplier>& rhs)
+{
+	supplier_impl n_obj{};
+	auto* buff = new char[100];
+	lhs.getline(buff, 100);
+
+	const auto val_count = strcmp(buff, "")==0 ? 0 : stoi(buff);
+	for (auto i = 0; i < val_count; i++)
+	{
+		lhs >> n_obj;
+		/*auto v_company = n_obj.get_company();
+		auto v_address = n_obj.get_address();
+		auto v_type = n_obj.get_type();
+		auto v_balance = n_obj.get_balance();
+		auto v_date = n_obj.get_date();
+		supplier t_obj(v_company, v_address, v_type, v_balance, v_date);*/
+		auto t_obj(n_obj.get());
+		rhs.push_back(t_obj);
+	}
+	return rhs;
+}
+
+data_base<seller>& operator>>(istream& lhs, data_base<seller>& rhs)
+{
+	seller_impl n_obj{};
+	auto* buff = new char[100];
+	lhs.getline(buff, 100);
+
+	const auto val_count = strcmp(buff, "") == 0 ? 0 : stoi(buff);
+	for (auto i = 0; i < val_count; i++)
+	{
+		lhs >> n_obj;
+		/*auto v_person = n_obj.get_person();
+		auto v_balance = n_obj.get_balance();
+		auto v_date = n_obj.get_date();
+		auto t_obj(*new seller(v_person, v_balance, v_date));*/
+
+		auto t_obj(n_obj.get());
+		rhs.push_back(t_obj);
+	}
+	return rhs;
 }
 
 

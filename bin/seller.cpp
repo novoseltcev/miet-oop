@@ -117,3 +117,4 @@ seller& seller_impl::get()
 {
 	return *new seller(person_, get_balance(), *new ::date(get_date()));
 }
+

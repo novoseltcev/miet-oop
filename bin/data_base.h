@@ -22,7 +22,6 @@ class data_base
 
 	void table_end(double);
 
-	//friend data_base search(data_base&);
 	
 	std::list<T> db_{};
 
@@ -45,6 +44,8 @@ public:
 
 	std::list<T> get();
 
+	friend data_base search(data_base&);
+
 	bool filter_by_data(data_base&, ::date&, const std::string&);
 	
 	bool set_debtor(::date&);
@@ -54,4 +55,6 @@ public:
 	void sort(const std::string&);
 
 	bool filter_by_type(data_base&);
+
+	friend data_base<T>& operator>>(std::istream&, data_base<T>&);
 };

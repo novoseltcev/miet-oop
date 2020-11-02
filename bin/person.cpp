@@ -43,11 +43,9 @@ ostream& operator<<(ostream& lhs, person& rhs)
 
 person& operator>>(istream& lhs, person& rhs)
 {
-	string v_surname{};
-	string v_name{};
-	string v_middle_name{};
+	string v_surname, v_name, v_middle_name;
 	cout << "Введите Фамилию: ";
-	input_string(v_name, 24);
+	input_string(v_surname, 24);
 	cout << "Введите Имя: ";
 	input_string(v_name, 24);
 	cout << "Введите Отчество: ";
