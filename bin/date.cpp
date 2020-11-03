@@ -116,7 +116,7 @@ ostream& operator<<(ostream& lhs, ::date& rhs)
 	lhs << "  ";
 	lhs.width(19);
 	lhs << to_string(rhs.get_day()) + " " + rhs.month_to_str() + " " + to_string(rhs.get_year());
-	lhs << " |" << endl;
+	lhs << " |";
 	return lhs;
 }
 

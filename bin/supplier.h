@@ -33,7 +33,7 @@ public:
 
 	int get_type();
 
-	static void table_name(std::string&, std::string&); //override;
+	static void table_name(std::string&, std::string&);
 
 	supplier& operator!();
 
@@ -55,9 +55,6 @@ public:
 
 	supplier_impl(supplier& obj):
 		supplier(obj) {}
-	
-	supplier_impl(std::string& v_company, std::string& v_address, int v_type, double v_balance, ::date& v_date):
-		supplier(v_company, v_address, v_type, v_balance, v_date) {};
 	
 	friend std::ostream& operator<<(std::ostream&, supplier_impl&);
 

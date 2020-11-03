@@ -39,8 +39,8 @@ int supplier::get_type() { return type_; }
 
 void supplier::table_name(std::string&separator_txt, std::string&main_txt)
 {
-	separator_txt = "                         |                         |                  |              |                      |";
-	main_txt = "  Название фирмы         |  Юридический адресс     |  Тип поставщика  |  Сальдо      |     Дата поставки    |";
+	separator_txt = "                         |                         |                  |                      |              |";
+	main_txt = "  Название фирмы         |  Юридический адресс     |  Тип поставщика  |     Дата поставки    |  Сальдо      |";
 }
 
 supplier& supplier::operator!()
@@ -59,11 +59,6 @@ supplier& supplier::operator= (supplier& right)
 	return *this;
 }
 
-/*bool operator==(supplier& lhs, ::date& rhs)
-{
-	return lhs.get_date() == rhs;
-}*/
-
 bool operator==(supplier& lhs, supplier& rhs)
 {
 	return lhs.get_company() == rhs.get_company() && lhs.get_address() == rhs.get_address()
@@ -73,30 +68,32 @@ bool operator==(supplier& lhs, supplier& rhs)
 
 ostream& operator<<(ostream& lhs, supplier& rhs)
 {
-	lhs.width(25);
+	lhs << " ";
+	lhs.width(24);
 	lhs.setf(ios::left);
 	lhs << rhs.get_company();
-	lhs << "|";
+	lhs << "| ";
 
-	lhs.width(25);
+	lhs.width(24);
 	lhs << rhs.get_address();
-	lhs << "|";
+	lhs << "| ";
 
 	lhs.unsetf(ios::left);
 	lhs.setf(ios::right);
 	lhs.width(16);
 	if (rhs.get_type() == 1) lhs << "Cырьё";
 	if (rhs.get_type() == 2) lhs << "Оборудование";
-	lhs << "  |";
+	lhs << " |";
 
-	lhs.setf(ios::fixed);
+	lhs << rhs.date__;
+	
+	lhs.setf( ios::right | ios::fixed);
 	lhs.width(12);
 	lhs.precision(2);
 	lhs << rhs.get_balance();
 	lhs.unsetf(ios::right | ios::fixed);
-	lhs << "  |";
+	lhs << "  |" << endl;
 	
-	lhs << rhs.date__;
 	return lhs;
 }
 
@@ -123,8 +120,6 @@ supplier& operator>>(istream& lhs, supplier& rhs)
 	rhs.date__ = v_data;
 	return rhs;
 }
-
-
 
 ostream& operator<<(std::ostream& lhs, supplier_impl& rhs)
 {

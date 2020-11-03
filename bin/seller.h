@@ -28,6 +28,8 @@ public:
 
 	person get_person();
 
+	static void table_name(std::string&, std::string&);
+
 	seller& operator=(seller&);
 
 	friend bool operator==(seller&, seller&);
@@ -42,7 +44,9 @@ class seller_impl final: public seller
 public:
 	seller_impl() :
 		seller() {}
-
+	seller_impl(seller& obj):
+		seller(obj) {}
+	
 	friend std::ostream& operator<<(std::ostream&, seller_impl&);
 
 	friend seller_impl& operator>> (std::istream&, seller_impl&);

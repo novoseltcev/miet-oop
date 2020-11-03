@@ -35,7 +35,7 @@ public:
 
 	::date& get_date();
 
-	static void /*virtual*/ table_name(std::string&, std::string&);
+	static void table_name(std::string&, std::string&);
 	
 	common& operator= (common&);
 

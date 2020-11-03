@@ -34,10 +34,21 @@ person& person::operator=(person& right)
 
 ostream& operator<<(ostream& lhs, person& rhs)
 {
-	lhs << "  ";
-	lhs.width(72);
-	lhs << rhs.get_surname() + " " + rhs.get_name() + " " + rhs.get_middle_name();
-	lhs << " |" << endl;
+	lhs << " ";
+	lhs.width(24);
+	lhs.setf(ios::left);
+	lhs << rhs.get_surname();
+	lhs << "| ";
+
+	lhs.width(24);
+	lhs.setf(ios::left);
+	lhs << rhs.get_name();
+	lhs << "| ";
+	
+	lhs.width(24);
+	lhs.setf(ios::left);
+	lhs << rhs.get_middle_name();
+	lhs << "|";
 	return lhs;
 }
 

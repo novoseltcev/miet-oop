@@ -30,6 +30,12 @@ person seller::get_person()
 	return *new person(person_);
 }
 
+void seller::table_name(std::string& separator_txt, std::string& main_txt)
+{
+	separator_txt = "                         |                         |                         |                      |              |";
+	main_txt = "  Фамилия                |  Имя                    |  Отчество               |     Дата продажи     | Сальдо       |";
+}
+
 seller& seller::operator= (seller& right)
 {
 	date__ = right.date__;
@@ -49,14 +55,15 @@ ostream& operator<<(ostream & lhs, seller & rhs)
 {
 	lhs << rhs.person_;
 	
-	lhs.setf(ios::fixed);
+	lhs << rhs.date__;
+
+	lhs.setf(ios::right | ios::fixed);
 	lhs.width(12);
 	lhs.precision(2);
 	lhs << rhs.get_balance();
 	lhs.unsetf(ios::right | ios::fixed);
-	lhs << "  |";
+	lhs << "  |" << endl;
 	
-	lhs << rhs.date__;
 	return lhs;
 }
 

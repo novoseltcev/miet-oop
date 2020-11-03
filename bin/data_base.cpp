@@ -49,7 +49,11 @@ void data_base<T>::load(const string& filename)
 }
 
 template <typename T>
-void data_base<T>::table_line() { cout <<"-------------------------|-------------------------|------------------|--------------|----------------------|"<< endl; }
+void data_base<T>::table_line()
+{
+	const string var = typeid(T).name() == typeid(supplier).name() ? "" : "-------";
+	cout <<"-------------------------|-------------------------|------------------" + var +"|----------------------|--------------|"<< endl;
+}
 
 template <typename T>
 void data_base<T>::table_head()
@@ -82,45 +86,28 @@ double data_base<T>::table_body()
 template <typename T>
 void data_base<T>::table_end(double sum)
 {
-	const string table_end_text = typeid(T) == typeid(supplier) ? "Общая задолженность:" : typeid(T) == typeid(supplier) ? "Общее сальдо продаж" : "";
-	const auto length = typeid(T) == typeid(supplier) ? 83 : typeid(T) == typeid(supplier) ? 92 : 0 ;
+	const string table_end_text = typeid(T) == typeid(supplier) ? "Общая задолженность:" : typeid(T) == typeid(seller) ? "Общее сальдо продаж :" : "";
+	const auto length = typeid(T) == typeid(supplier) ? 86 : typeid(T) == typeid(seller) ? 92 : 0 ;
 	cout << table_end_text;
 	cout.setf(ios::right | ios::fixed);
 	cout.precision(2);
 	cout.width(length);
-	cout << sum << "  " << endl;
+	cout << sum << "  |" << endl;
 	cout.unsetf(ios::right | ios::fixed);
 	cout << "Кол-во товаров в базе: ";
 	cout.width(length);
 	cout.setf(ios::left);
+	cout.width(length - (typeid(T) == typeid(supplier) ? 3 : typeid(T) == typeid(seller) ? 2 : 0));
 	cout << db_.size();
-	cout << "  " << endl;
+	cout << "  |" << endl;
 	cout.unsetf(ios::left);
 }
 
-//переделать стартовый алгоритм
 template <typename T>
 data_base<T>::data_base(const string& filename)
 {
 	ifstream fp(filename, ios_base::out);
-	auto start_count = -1;
-	if (!fp.is_open())
-	{
-		cout << "Введите кол-во записей: ";
-		input_int_with_border(&start_count, 1, 10);
-		cout << endl;
-		for (auto i = 1; i <= start_count; i++)
-		{
-			system("cls");
-			cout << "Введите кол-во записей: " << start_count << endl;
-			cout << i << " из " << start_count << endl;
-			auto t_obj = *new T();
-			cin >> t_obj;
-			push_back(t_obj);
-		}
-	}
-	else
-	{
+	if (fp.is_open()) {
 		load(filename);
 		fp.close();
 	}
@@ -133,9 +120,7 @@ data_base<T>::data_base(const data_base<T>& obj):
 template <typename T>
 data_base<T>::~data_base() { db_.clear(); }
 
-//функционльное програмирование
-template <typename T>
-void data_base<T>::save(const string& filename)
+void data_base<supplier>::save(const string& filename)
 {
 	ofstream fp(filename, ios_base::in | ios_base::trunc);
 	if (!fp.is_open())
@@ -147,40 +132,34 @@ void data_base<T>::save(const string& filename)
 	} 
 	else
 	{
-		const auto is_supplier = typeid(T) == typeid(supplier);
-		const auto is_seller = typeid(T) == typeid(seller);
 		fp << db_.size() << "\n";
-		if (is_supplier)
+	
+		for (auto& obj : db_)
 		{
-			//supplier_impl n_obj;
-			for (auto obj : db_)
-			{
-				supplier_impl t_obj(obj);
-				fp << t_obj;
-			}
+			supplier_impl n_obj(obj);
+			fp << n_obj;
 		}
-		else
+	}
+}
+
+void data_base<seller>::save(const string& filename)
+{
+	ofstream fp(filename, ios_base::in | ios_base::trunc);
+	if (!fp.is_open())
+	{
+		system("color 74");
+		cout << "{Ошибка открытия файла " << filename << " }"
+			<< endl << endl;
+		system("color 71");
+	}
+	else
+	{
+		fp << db_.size() << "\n";
+		for (auto& obj : db_)
 		{
-			if (is_seller)
-			{
-				//seller_impl n_obj();
-				/*for (auto obj : db_)
-				{
-					fp << n_obj;
-				}*/
-			}
-			else
-			{
-				auto out_str = new string[3]
-				{
-					"список эл-ов типа ",
-					typeid(T).name(),
-					" не поддерживается классом"
-				};
-				throw new exception((out_str[0] + out_str[1] + out_str[2]).c_str());
-			}
+			seller_impl n_obj(obj);
+			fp << n_obj;
 		}
-		
 	}
 }
 
@@ -225,8 +204,47 @@ bool data_base<supplier>::filter_by_type(data_base<supplier>& val_data_base)
 	return (is_empty()) ? true : false;
 }
 
-
 bool data_base<supplier>::filter_by_data(data_base<supplier>& val_data_base, ::date& val_data, const string& flag)
+{
+	if (flag == ">")
+	{
+		for (auto& i : val_data_base.db_)
+		{
+			if (i.get_date() > val_data) { push_back(i); }
+		}
+	}
+	if (flag == ">=")
+	{
+		for (auto& i : val_data_base.db_)
+		{
+			if (i.get_date() >= val_data) { push_back(i); }
+		}
+	}
+	if (flag == "==")
+	{
+		for (auto& i : val_data_base.db_)
+		{
+			if (i.get_date() == val_data) { push_back(i); }
+		}
+	}
+	if (flag == "<")
+	{
+		for (auto& i : val_data_base.get())
+		{
+			if (i.get_date() < val_data) { push_back(i); }
+		}
+	}
+	if (flag == "<=")
+	{
+		for (auto& i : val_data_base.db_)
+		{
+			if (i.get_date() <= val_data) { push_back(i); }
+		}
+	}
+	return (is_empty()) ? true : false;
+}
+
+bool data_base<seller>::filter_by_data(data_base<seller>& val_data_base, ::date& val_data, const string& flag)
 {
 	if (flag == ">")
 	{
@@ -335,4 +353,4 @@ data_base<seller>& operator>>(istream& lhs, data_base<seller>& rhs)
 
 
 template data_base<supplier>;
-//template data_base<seller>;
+template data_base<seller>;
