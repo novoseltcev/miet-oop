@@ -21,6 +21,11 @@ public:
 	~seller() override = default;
 
 	std::string get_surname();
+
+	int get_year() override
+	{
+		return common::get_year() % 100;
+	}
 	
 	std::string get_name();
 	

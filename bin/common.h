@@ -23,7 +23,7 @@ public:
 
 	virtual ~common() = default;
 	
-	int get_year();
+	virtual int get_year();
 
 	int get_month();
 	

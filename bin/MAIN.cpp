@@ -15,6 +15,25 @@ int main()
 	system("color 71");
 	int flag;
 
+	/*{
+		common *v_common;
+		//cout << "Class common: " << v_common->get_year() << endl << endl;
+		supplier spl;
+		v_common = &spl;
+		cout << "Class supplier like common: " << v_common->get_year() << endl << endl;
+		
+		seller td;
+		v_common = &td;
+		cout << "Class seller(overriden) like common: " << v_common->get_year() << endl << endl;
+
+		auto v_supplier = *new supplier();
+		cout << "Class supplier( not overrden): " << v_supplier.get_year() << endl << endl;
+		
+		auto v_seller = *new seller();
+		cout << "Class seller(overriden): " << v_seller.get_year() << endl << endl;
+	}*/
+	
+	
 	data_base<supplier> supplier_data_base("data_supplier.txt");
 	data_base<seller> seller_data_base("data_seller.txt");
 

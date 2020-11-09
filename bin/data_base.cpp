@@ -97,7 +97,8 @@ void data_base<T>::table_end(double sum)
 	cout << "Кол-во товаров в базе: ";
 	cout.width(length);
 	cout.setf(ios::left);
-	cout.width(length - (typeid(T) == typeid(supplier) ? 3 : typeid(T) == typeid(seller) ? 2 : 0));
+	const auto length_2 = length - (typeid(T) == typeid(supplier) ? 3 : typeid(T) == typeid(seller) ? 2 : 0);
+	cout.width(length_2);
 	cout << db_.size();
 	cout << "  |" << endl;
 	cout.unsetf(ios::left);
@@ -204,47 +205,8 @@ bool data_base<supplier>::filter_by_type(data_base<supplier>& val_data_base)
 	return (is_empty()) ? true : false;
 }
 
-bool data_base<supplier>::filter_by_data(data_base<supplier>& val_data_base, ::date& val_data, const string& flag)
-{
-	if (flag == ">")
-	{
-		for (auto& i : val_data_base.db_)
-		{
-			if (i.get_date() > val_data) { push_back(i); }
-		}
-	}
-	if (flag == ">=")
-	{
-		for (auto& i : val_data_base.db_)
-		{
-			if (i.get_date() >= val_data) { push_back(i); }
-		}
-	}
-	if (flag == "==")
-	{
-		for (auto& i : val_data_base.db_)
-		{
-			if (i.get_date() == val_data) { push_back(i); }
-		}
-	}
-	if (flag == "<")
-	{
-		for (auto& i : val_data_base.get())
-		{
-			if (i.get_date() < val_data) { push_back(i); }
-		}
-	}
-	if (flag == "<=")
-	{
-		for (auto& i : val_data_base.db_)
-		{
-			if (i.get_date() <= val_data) { push_back(i); }
-		}
-	}
-	return (is_empty()) ? true : false;
-}
-
-bool data_base<seller>::filter_by_data(data_base<seller>& val_data_base, ::date& val_data, const string& flag)
+template<typename T>
+bool data_base<T>::filter_by_data(data_base<T>& val_data_base, ::date& val_data, const string& flag)
 {
 	if (flag == ">")
 	{
