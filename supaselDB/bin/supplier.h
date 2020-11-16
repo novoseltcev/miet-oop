@@ -1,8 +1,7 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
-
+// ReSharper disable CppClangTidyCppcoreguidelinesSpecialMemberFunctions
 #pragma once
 #include "common.h"
-#include "seller.h"
 
 
 class supplier : public common
@@ -21,7 +20,7 @@ public:
 
 	supplier(const supplier& obj);
 
-	~supplier() noexcept override = default;
+	~supplier() noexcept override;
 
 
 	bool get_debtor();
@@ -52,9 +51,9 @@ public:
 class supplier_impl final : public supplier
 {
 public:
-	supplier_impl(): supplier() {}
+	supplier_impl();
 
-	supplier_impl(supplier& obj): supplier(obj) {}
+	explicit supplier_impl(supplier& obj);
 
 
 	supplier& get();

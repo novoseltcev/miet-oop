@@ -22,13 +22,15 @@ common::common():
 	balance__(0.),
 	date__(*new date()) {}
 
-common::common(double val_balance, date& val_data):
+common::common(const double val_balance, date& val_data):
 	balance__(val_balance),
 	date__(val_data) {}
 
 common::common(const common& obj):
 	balance__(obj.balance__),
-	date__(*new date(obj.date__)) {};
+	date__(obj.date__) {}
+
+common::~common() noexcept = default;;
 
 
 int common::get_year() { return date__.get_year(); }

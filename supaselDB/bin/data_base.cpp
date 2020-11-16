@@ -1,8 +1,18 @@
+// ReSharper disable CppClangTidyClangDiagnosticMissingDeclarations
 #include "data_base.h"
 #include <fstream>
-#include "supplier.h"
 #include <list>
+#include "exception_input.h"
+#include "supplier.h"
 using namespace std;
+
+
+template data_base<supplier>;
+template data_base<seller>;
+
+
+template <typename T>
+data_base<T>::data_base() = default;
 
 template <typename T>
 data_base<T>::data_base(const string& filename) {
@@ -14,15 +24,16 @@ data_base<T>::data_base(const string& filename) {
 }
 
 template <typename T>
-data_base<T>::data_base(const data_base<T>& obj): db_(obj.db_) {}
+data_base<T>::data_base(const data_base<T>& obj):
+	db_(obj.db_) {}
 
 template <typename T>
-data_base<T>::~data_base() { db_.clear(); }
+data_base<T>::~data_base() noexcept { db_.clear(); }
 
 
 template <typename T>
 void data_base<T>::table_line() {
-	const string var = typeid(T).name() == typeid(supplier).name() ? "" : "-------";
+	const string var = typeid(T).name() == typeid(supplier).name() ? ""	: "-------";
 	cout << "-------------------------|-------------------------|------------------" + var +
 		"|----------------------|--------------|" << endl;
 }
@@ -50,13 +61,13 @@ double data_base<T>::table_body() {
 }
 
 template <typename T>
-void data_base<T>::table_end(double sum) {
-	const string table_end_text = typeid(T) == typeid(supplier)
-		                              ? "Общая задолженность:"
-		                              : typeid(T) == typeid(seller)
-		                              ? "Общее сальдо продаж:"
-		                              : "UNKNOWN";
+void data_base<T>::table_end(const double sum) {
 	const auto length = typeid(T) == typeid(supplier) ? 86 : typeid(T) == typeid(seller) ? 93 : 0;
+	const string table_end_text = typeid(T) == typeid(supplier)
+									? "Общая задолженность:"
+		                            : typeid(T) == typeid(seller)
+										? "Общее сальдо продаж:"
+										: "UNKNOWN";
 	cout << table_end_text;
 	cout.setf(ios::right | ios::fixed);
 	cout.precision(2);
@@ -74,19 +85,19 @@ void data_base<T>::table_end(double sum) {
 
 template <typename T>
 void data_base<T>::table() {
-	if (is_empty()) {
-		cout.width(63);
-		const string var = typeid(T).name() == typeid(supplier).name()
-			                   ? "поставщиках."
-			                   : typeid(T).name() == typeid(supplier).name()
-			                   ? "продавцах."
-			                   : "текущем типе данных";
-		cout << "В Базе отсутствует информация о "
-			<< var << endl;
-	}
-	else {
+	if (!is_empty()) {
 		table_head();
 		table_end(table_body());
+	}
+	else {
+		cout.width(63);
+		const string var = typeid(T).name() == typeid(supplier).name()
+			? "поставщиках."
+			: typeid(T).name() == typeid(supplier).name()
+			? "продавцах."
+			: "текущем типе данных";
+		cout << "В Базе отсутствует информация о "
+			<< var << endl;
 	}
 }
 
@@ -157,12 +168,16 @@ list<T> data_base<T>::get() { return db_; }
 
 
 bool data_base<supplier>::set_debtor(class date& val_data) {
-	for (auto& obj : db_) { if (obj.get_date() < val_data) { !obj; } }
+	for (auto& obj : db_) {
+		if (obj.get_date() < val_data) { !obj; }
+	}
 	return (is_empty()) ? true : false;
 }
 
 bool data_base<supplier>::search_debtor(data_base<supplier>& val_data_base) {
-	for (auto& obj : val_data_base.db_) { if (obj.get_debtor()) { push_back(obj); } }
+	for (auto& obj : val_data_base.db_) {
+		if (obj.get_debtor()) { push_back(obj); }
+	}
 	return (is_empty()) ? true : false;
 }
 
@@ -175,13 +190,15 @@ bool data_base<supplier>::filter_by_type(data_base<supplier>& val_data_base) {
 			is_int(cin, &val_type, 1, 2);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
 		}
 	}
-	for (auto& i : val_data_base.db_) { if (i.get_type() == val_type) push_back(i); }
+	for (auto& i : val_data_base.db_) {
+		if (i.get_type() == val_type) { push_back(i); }
+	}
 	return (is_empty()) ? true : false;
 }
 
@@ -195,13 +212,15 @@ data_base<supplier> search(data_base<supplier>& val_data_base) {
 			is_correct_string(cin, v_company, 24);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
 		}
 	}
-	for (auto sup_obj : cur_db) { if (sup_obj.get_company() == v_company) { copied_data_base.push_back(sup_obj); } }
+	for (auto sup_obj : cur_db) {
+		if (sup_obj.get_company() == v_company) { copied_data_base.push_back(sup_obj); }
+	}
 	return copied_data_base;
 }
 
@@ -223,36 +242,24 @@ bool data_base<T>::filter_by_data(data_base<T>& val_data_base, date& val_data, b
 	for (auto& i : val_data_base.db_) {
 		if (func(i, val_data)) { push_back(i); }
 	}
-	/*
-	if (flag == ">") { for (auto& i : val_data_base.db_) { if (i.get_date() > val_data) { push_back(i); } } }
-	if (flag == ">=") { for (auto& i : val_data_base.db_) { if (i.get_date() >= val_data) { push_back(i); } } }
-	if (flag == "==") { for (auto& i : val_data_base.db_) { if (i.get_date() == val_data) { push_back(i); } } }
-	if (flag == "<") { for (auto& i : val_data_base.get()) { if (i.get_date() < val_data) { push_back(i); } } }
-	if (flag == "<=") { for (auto& i : val_data_base.db_) { if (i.get_date() <= val_data) { push_back(i); } } }*/
 	return (is_empty()) ? true : false;
 }
 
 template <typename T>
-void data_base<T>::sort(bool comparate(T&, T&)) {
-	db_.sort(comparate);
+void data_base<T>::sort(bool comparator(T&, T&)) {
+	db_.sort(comparator);
 	table();
 }
 
 
 data_base<supplier>& operator>>(istream& lhs, data_base<supplier>& rhs) {
 	supplier_impl n_obj{};
-	auto* buff = new char[100];
-	lhs.getline(buff, 100);
+	auto* buff = new char[3];
+	lhs.getline(buff, 3);
 
 	const auto val_count = strcmp(buff, "") == 0 ? 0 : stoi(buff);
 	for (auto i = 0; i < val_count; i++) {
 		lhs >> n_obj;
-		/*auto v_company = n_obj.get_company();
-		auto v_address = n_obj.get_address();
-		auto v_type = n_obj.get_type();
-		auto v_balance = n_obj.get_balance();
-		auto v_date = n_obj.get_date();
-		supplier t_obj(v_company, v_address, v_type, v_balance, v_date);*/
 		auto t_obj(n_obj.get());
 		rhs.push_back(t_obj);
 	}
@@ -261,18 +268,14 @@ data_base<supplier>& operator>>(istream& lhs, data_base<supplier>& rhs) {
 
 data_base<seller>& operator>>(istream& lhs, data_base<seller>& rhs) {
 	seller_impl n_obj{};
-	auto* buff = new char[100];
-	lhs.getline(buff, 100);
+	auto* buff = new char[4];
+	lhs.getline(buff, 4);
 
 	const auto val_count = strcmp(buff, "") == 0 ? 0 : stoi(buff);
 	for (auto i = 0; i < val_count; i++) {
 		lhs >> n_obj;
-
 		auto t_obj(n_obj.get());
 		rhs.push_back(t_obj);
 	}
 	return rhs;
 }
-
-template data_base<supplier>;
-template data_base<seller>;

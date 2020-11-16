@@ -1,15 +1,15 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
 
 #include "seller.h"
+#include "exception_input.h"
 using namespace std;
 
 
 seller::seller():
-	common(),
-	person_() {}
+	common() {}
 
 
-seller::seller(person& val_person, double val_balance, date& val_data) :
+seller::seller(person& val_person, const double val_balance, date& val_data) :
 	common(val_balance, val_data),
 	person_(val_person) {}
 
@@ -19,8 +19,7 @@ seller::seller(const seller& obj):
 	person_(obj.person_) {}
 
 
-seller::~seller()
-= default;
+seller::~seller() noexcept = default;
 
 
 string seller::get_surname() { return person_.get_surname(); }
@@ -80,7 +79,7 @@ seller& operator>>(istream& lhs, seller& rhs) {
 			is_double(lhs, &v_balance);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
@@ -131,4 +130,8 @@ seller_impl& operator>>(istream& lhs, seller_impl& rhs) {
 	return rhs;
 }
 
-seller& seller_impl::get() { return *new seller(person_, get_balance(), *new date(get_date())); }
+seller_impl::seller_impl(): seller() {}
+
+seller_impl::seller_impl(seller& obj): seller(obj) {}
+
+seller& seller_impl::get() { return *new seller(person_, get_balance(), get_date()); }

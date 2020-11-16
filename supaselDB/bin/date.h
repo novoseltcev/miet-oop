@@ -1,5 +1,5 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
-
+// ReSharper disable CppClangTidyCppcoreguidelinesSpecialMemberFunctions
 #pragma once
 #include <string>
 #include"check_input.h"
@@ -36,7 +36,6 @@ public:
 	date(const date&);
 
 	~date() noexcept = default;
-
 
 	uint_fast16_t get_year();
 

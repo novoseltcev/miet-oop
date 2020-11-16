@@ -2,6 +2,7 @@
 
 #include "supplier.h"
 #include <vector>
+#include "exception_input.h"
 using namespace std;
 
 
@@ -12,7 +13,7 @@ supplier::supplier():
 	type_(1) {}
 
 
-supplier::supplier(string& val_company, string& val_address, int val_type, double val_balance, date& val_data):
+supplier::supplier(string& val_company, string& val_address, const int val_type, const double val_balance, date& val_data):
 	common(val_balance, val_data),
 	company_(val_company),
 	address_(val_address),
@@ -24,6 +25,8 @@ supplier::supplier(const supplier& obj)
 	  company_(obj.company_),
 	  address_(obj.address_),
 	  type_(obj.type_) {}
+
+supplier::~supplier() noexcept = default;
 
 
 bool supplier::get_debtor() { return debtor_; }
@@ -64,8 +67,7 @@ supplier& supplier::operator=(supplier& right) {
 bool operator==(supplier& lhs, supplier& rhs) {
 	return lhs.get_company() == rhs.get_company() && lhs.get_address() == rhs.get_address()
 		&& lhs.get_type() == rhs.get_type() && abs(lhs.get_balance() - rhs.get_balance()) < .01
-		&& lhs.get_year() == rhs.get_year() && lhs.month_to_string() == rhs.month_to_string() && lhs.get_day() == rhs.
-		get_day();
+		&& lhs.get_year() == rhs.get_year() && lhs.month_to_string() == rhs.month_to_string() && lhs.get_day() == rhs.get_day();
 }
 
 ostream& operator<<(ostream& lhs, supplier& rhs) {
@@ -111,7 +113,7 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 			is_correct_string(lhs, v_company, 24);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
@@ -124,7 +126,7 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 			is_correct_string(lhs, v_address, 24);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
@@ -137,7 +139,7 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 			is_int(lhs, &v_type, 1, 2);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
@@ -150,7 +152,7 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 			is_double(lhs, &v_balance);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
@@ -208,6 +210,10 @@ supplier_impl& operator>>(std::istream& lhs, supplier_impl& rhs) {
 	return rhs;
 }
 
+supplier_impl::supplier_impl(): supplier() {}
+
+supplier_impl::supplier_impl(supplier& obj): supplier(obj) {}
+
 supplier& supplier_impl::get() {
-	return *new supplier(company_, address_, get_type(), get_balance(), *new date(get_date()));
+	return *new supplier(company_, address_, get_type(), get_balance(), get_date());
 }

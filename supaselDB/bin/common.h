@@ -3,8 +3,9 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "date.h"
 #include"check_input.h"
+// ReSharper disable CppClangTidyCppcoreguidelinesSpecialMemberFunctions
+#include "date.h"
 
 
 class common
@@ -21,7 +22,7 @@ public:
 
 	common(const common& obj);
 
-	virtual ~common() noexcept = default;
+	virtual ~common() noexcept;
 
 
 	int get_year();

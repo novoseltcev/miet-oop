@@ -1,3 +1,4 @@
+// ReSharper disable CppClangTidyCppcoreguidelinesSpecialMemberFunctions
 #pragma once
 #include<list>
 #include "seller.h"
@@ -13,9 +14,9 @@ class data_base
 	std::list<T> db_{};
 
 public:
-	data_base() {}
+	data_base();
 
-	data_base(const std::string&);
+	explicit data_base(const std::string&);
 
 	data_base(const data_base<T>&);
 
@@ -29,7 +30,7 @@ public:
 	void load(const std::string&);
 
 private:
-	void load(const string&, ifstream&);
+	void load(const std::string&, std::ifstream&);
 
 	static void table_line();
 
@@ -54,7 +55,7 @@ public:
 
 	bool filter_by_data(data_base&, date&, bool f(T&, date&));
 
-	void sort(bool comparate(T&, T&));
+	void sort(bool comparator(T&, T&));
 
 
 	bool set_debtor(date&);

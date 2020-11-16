@@ -1,5 +1,5 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
-
+// ReSharper disable CppClangTidyCppcoreguidelinesSpecialMemberFunctions
 #pragma once
 #include <string>
 #include"check_input.h"
@@ -18,7 +18,7 @@ public:
 
 	person(const person&);
 
-	~person() noexcept = default;
+	~person() noexcept;
 
 
 	std::string get_surname();

@@ -1,6 +1,7 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
 
 #include "person.h"
+#include "exception_input.h"
 using namespace std;
 
 person::person():
@@ -17,6 +18,8 @@ person::person(const person& obj):
 	surname_(obj.surname_),
 	name_(obj.name_),
 	middle_name_(obj.middle_name_) {}
+
+person::~person() noexcept = default;
 
 string person::get_surname() { return surname_; }
 
@@ -58,7 +61,7 @@ person& operator>>(istream& lhs, person& rhs) {
 			is_name(lhs, v_surname, 24);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
@@ -72,7 +75,7 @@ person& operator>>(istream& lhs, person& rhs) {
 			is_name(lhs, v_name, 24);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");
@@ -86,7 +89,7 @@ person& operator>>(istream& lhs, person& rhs) {
 			is_name(lhs, v_middle_name, 24);
 			break;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "Ошибка ввода: " << e.what() << endl;
 			system("color 71");

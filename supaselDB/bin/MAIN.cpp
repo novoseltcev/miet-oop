@@ -1,9 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS  // NOLINT(clang-diagnostic-reserved-id-macro)
+#include<Windows.h>
 #include"data_base.h"
+#include "exception_input.h"
 #include"seller.h"
 #include "supplier.h"
-#include<Windows.h>
-
 using namespace std;
 
 
@@ -12,11 +12,10 @@ int main() {
 	SetConsoleOutputCP(1251);
 	system(R"(title "Suppliers" and "Sellers")");
 	system("color 71");
-	int flag = 0;
-
 	data_base<supplier> supplier_data_base("data_supplier.txt");
 	data_base<seller> seller_data_base("data_seller.txt");
-
+	auto flag = 0;
+	
 SUPPLIERS:
 
 	while (true) {
@@ -45,7 +44,7 @@ SUPPLIERS:
 					is_int(cin, &flag, 1, 11);
 					break;
 				}
-				catch (exception_input e) {
+				catch (exception_input& e) {
 					system("color 74");
 					cout << "Ошибка ввода: " << e.what() << endl;
 					system("color 71");
@@ -57,11 +56,13 @@ SUPPLIERS:
 		case 1:
 			{
 				system("cls");
+				
 				goto SELLERS;
 			}
 		case 2:
 			{
 				system("cls");
+				
 				int start_count;
 				cout << "Введите кол-во записей: ";
 				while (true) {
@@ -69,13 +70,14 @@ SUPPLIERS:
 						is_int(cin, &start_count, 1, 10);
 						break;
 					}
-					catch (exception_input e) {
+					catch (exception_input& e) {
 						system("color 74");
 						cout << "Ошибка ввода: " << e.what() << endl;
 						system("color 71");
 						cout << "Повторите ввод: ";
 					}
 				}
+				
 				cout << endl;
 				for (auto i = 1; i <= start_count; i++) {
 					system("cls");
@@ -90,29 +92,37 @@ SUPPLIERS:
 		case 3:
 			{
 				system("cls");
-				if (supplier_data_base.is_empty()) { cout << "В БД отсутствуют записи." << endl << endl; }
+				
+				if (supplier_data_base.is_empty()) {
+					cout << "В БД отсутствуют записи." << endl << endl;
+				}
 				else { supplier_data_base.table(); }
 				break;
 			}
 		case 4:
 			{
 				system("cls");
+				
 				auto copied_data_base = search(supplier_data_base);
-				if (!copied_data_base.is_empty()) copied_data_base.table();
-				else cout << "Не найдено совпадений." << endl;
+				if (!copied_data_base.is_empty()) { copied_data_base.table(); }
+				else { cout << "Не найдено совпадений." << endl; }
 				break;
 			}
 		case 5:
 			{
 				system("cls");
+				
 				data_base<supplier> copied_data_base;
-				if (!copied_data_base.filter_by_type(supplier_data_base)) copied_data_base.table();
-				else cout << "Не найдено совпадений." << endl;
+				if (!copied_data_base.filter_by_type(supplier_data_base)) {
+					copied_data_base.table();
+				}
+				else { cout << "Не найдено совпадений." << endl; }
 				break;
 			}
 		case 6:
 			{
 				system("cls");
+				
 				date val_date;
 				cin >> val_date;
 				int t_flag;
@@ -129,7 +139,7 @@ SUPPLIERS:
 						is_int(cin, &t_flag, 1, 3);
 						break;
 					}
-					catch (exception_input e) {
+					catch (exception_input& e) {
 						system("color 74");
 						cout << "Ошибка ввода: " << e.what() << endl;
 						system("color 71");
@@ -140,7 +150,9 @@ SUPPLIERS:
 				switch (t_flag) {
 				case 1:
 					{
-					if (!copied_data_base.filter_by_data(supplier_data_base, val_date, [](supplier& a, date& b) -> bool { return a.get_date() < b; })) {
+						if (!copied_data_base.filter_by_data(supplier_data_base, val_date, 
+							[](supplier& a, date& b) -> bool { return a.get_date() < b; })
+							) {
 							copied_data_base.table();
 						}
 						else { cout << "Не найдено совпадений." << endl; }
@@ -148,7 +160,9 @@ SUPPLIERS:
 					}
 				case 2:
 					{
-						if (!copied_data_base.filter_by_data(supplier_data_base, val_date, [](supplier& a, date& b) -> bool { return a.get_date() == b; })) {
+						if (!copied_data_base.filter_by_data(supplier_data_base, val_date, 
+							[](supplier& a, date& b) -> bool { return a.get_date() == b; })
+							) {
 							copied_data_base.table();
 						}
 						else { cout << "Не найдено совпадений." << endl; }
@@ -156,7 +170,9 @@ SUPPLIERS:
 					}
 				case 3:
 					{
-						if (!copied_data_base.filter_by_data(supplier_data_base, val_date, [](supplier& a, date& b) -> bool { return a.get_date() > b; })) {
+						if (!copied_data_base.filter_by_data(supplier_data_base, val_date, 
+							[](supplier& a, date& b) -> bool { return a.get_date() > b; })
+							) {
 							copied_data_base.table();
 						}
 						else { cout << "Не найдено совпадений." << endl; }
@@ -169,27 +185,34 @@ SUPPLIERS:
 		case 7:
 			{
 				system("cls");
+				
 				supplier_data_base.sort(sort_by_balance);
 				break;
 			}
 		case 8:
 			{
 				system("cls");
+				
 				supplier reference_obj;
 				auto counter = 0;
 				cin >> reference_obj;
-				for (auto obj : supplier_data_base.get()) { if (obj == reference_obj) { counter++; } }
+				for (auto obj : supplier_data_base.get()) {
+					if (obj == reference_obj) { counter++; }
+				}
 				if (counter == 0) {
-					supplier_data_base.push_back(reference_obj);
 					cout << "\nВхождений не было обнаружено.";
+					supplier_data_base.push_back(reference_obj);
 					cout << "\nЭталонный объект был добавлен в БД." << endl;
 				}
-				else cout << "\nНайдено " << counter << " вхождений эталонного объекта" << endl;
+				else {
+					cout << "\nНайдено " << counter << " вхождений эталонного объекта" << endl;
+				}
 				break;
 			}
 		case 9:
 			{
 				system("cls");
+				
 				data_base<supplier> debtors_data_base("data_deptor.txt");
 				debtors_data_base.table();
 				break;
@@ -197,36 +220,42 @@ SUPPLIERS:
 		case 10:
 			{
 				system("cls");
+				
 				data_base<supplier> copied_data_base;
 				date val_date;
 				cin >> val_date;
 				supplier_data_base.set_debtor(val_date);
-				if (copied_data_base.search_debtor(supplier_data_base)) { cout << "Не найдено совпадений." << endl; }
+				if (copied_data_base.search_debtor(supplier_data_base)) {
+					cout << "Не найдено совпадений." << endl;
+				}
 				else {
 					copied_data_base.table();
-					int t_flag;
 					cout << endl;
 					cout << "Сохранить базу должников: Да - 1, Нет - 2" << endl;
 					cout << "Введите номер функции:\t";
+					int t_flag;
 					while (true) {
 						try {
 							is_int(cin, &t_flag, 1, 2);
 							break;
 						}
-						catch (exception_input e) {
+						catch (exception_input& e) {
 							system("color 74");
 							cout << "Ошибка ввода: " << e.what() << endl;
 							system("color 71");
 							cout << "Повторите ввод: ";
 						}
 					}
-					if (t_flag == 1) { copied_data_base.save("data_deptor.txt"); }
+					if (t_flag == 1) {
+						copied_data_base.save("data_deptor.txt");
+					}
 				}
 				break;
 			}
 		case 11:
 			{
 				system("cls");
+				
 				supplier_data_base.save("data_supplier.txt");
 				seller_data_base.save("data_seller.txt");
 				return 0;
@@ -259,7 +288,7 @@ SELLERS:
 					is_int(cin, &flag, 1, 8);
 					break;
 				}
-				catch (exception_input e) {
+				catch (exception_input& e) {
 					system("color 74");
 					cout << "Ошибка ввода: " << e.what() << endl;
 					system("color 71");
@@ -272,11 +301,13 @@ SELLERS:
 		case 1:
 			{
 				system("cls");
+				
 				goto SUPPLIERS;
 			}
 		case 2:
 			{
 				system("cls");
+				
 				int start_count;
 				cout << "Введите кол-во записей: ";
 				while (true) {
@@ -284,7 +315,7 @@ SELLERS:
 						is_int(cin, &start_count, 1, 10);
 						break;
 					}
-					catch (exception_input e) {
+					catch (exception_input& e) {
 						system("color 74");
 						cout << "Ошибка ввода: " << e.what() << endl;
 						system("color 71");
@@ -305,6 +336,7 @@ SELLERS:
 		case 3:
 			{
 				system("cls");
+				
 				if (seller_data_base.is_empty()) { cout << "В БД отсутствуют записи." << endl << endl; }
 				else { seller_data_base.table(); }
 				break;
@@ -312,6 +344,7 @@ SELLERS:
 		case 4:
 			{
 				system("cls");
+				
 				auto copied_data_base = search(seller_data_base);
 				if (!copied_data_base.is_empty()) copied_data_base.table();
 				else cout << "Не найдено совпадений." << endl;
@@ -320,6 +353,7 @@ SELLERS:
 		case 5:
 			{
 				system("cls");
+				
 				data_base<seller> copied_data_base;
 				date val_date;
 				cin >> val_date;
@@ -337,7 +371,7 @@ SELLERS:
 						is_int(cin, &t_flag, 1, 3);
 						break;
 					}
-					catch (exception_input e) {
+					catch (exception_input& e) {
 						system("color 74");
 						cout << "Ошибка ввода: " << e.what() << endl;
 						system("color 71");
@@ -347,7 +381,9 @@ SELLERS:
 				switch (t_flag) {
 				case 1:
 					{
-						if (!copied_data_base.filter_by_data(seller_data_base, val_date, [](seller& a, date& b) -> bool { return a.get_date() < b; })) {
+						if (!copied_data_base.filter_by_data(seller_data_base, val_date, 
+							[](seller& a, date& b) -> bool { return a.get_date() < b; })
+							) {
 							copied_data_base.table();
 						}
 						else { cout << "Не найдено совпадений." << endl; }
@@ -355,7 +391,9 @@ SELLERS:
 					}
 				case 2:
 					{
-						if (!copied_data_base.filter_by_data(seller_data_base, val_date, [](seller& a, date& b) -> bool { return a.get_date() == b; })) {
+						if (!copied_data_base.filter_by_data(seller_data_base, val_date, 
+							[](seller& a, date& b) -> bool { return a.get_date() == b; })
+							) {
 							copied_data_base.table();
 						}
 						else { cout << "Не найдено совпадений." << endl; }
@@ -363,7 +401,9 @@ SELLERS:
 					}
 				case 3:
 					{
-						if (!copied_data_base.filter_by_data(seller_data_base, val_date, [](seller& a, date& b) -> bool { return a.get_date() > b; })) {
+						if (!copied_data_base.filter_by_data(seller_data_base, val_date, 
+							[](seller& a, date& b) -> bool { return a.get_date() > b; })
+							) {
 							copied_data_base.table();
 						}
 						else { cout << "Не найдено совпадений." << endl; }
@@ -376,27 +416,34 @@ SELLERS:
 		case 6:
 			{
 				system("cls");
+				
 				seller_data_base.sort(sort_by_balance);
 				break;
 			}
 		case 7:
 			{
 				system("cls");
+				
 				seller reference_obj;
 				auto counter = 0;
 				cout << reference_obj;
-				for (auto obj : seller_data_base.get()) { if (obj == reference_obj) { counter++; } }
+				for (auto obj : seller_data_base.get()) {
+					if (obj == reference_obj) { ++counter; }
+				}
 				if (counter == 0) {
 					seller_data_base.push_back(reference_obj);
 					cout << "\nВхождений не было обнаружено.";
 					cout << "\nЭталонный объект был добавлен в БД." << endl;
 				}
-				else { cout << "\nНайдено " << counter << " вхождений эталонного объекта" << endl; }
+				else {
+					cout << "\nНайдено " << counter << " вхождений эталонного объекта" << endl;
+				}
 				break;
 			}
 		case 8:
 			{
 				system("cls");
+				
 				supplier_data_base.save("data_supplier.txt");
 				seller_data_base.save("data_seller.txt");
 				return 0;

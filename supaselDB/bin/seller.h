@@ -1,8 +1,8 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
-
+// ReSharper disable CppClangTidyCppcoreguidelinesSpecialMemberFunctions
 #pragma once
-#include "person.h"
 #include "common.h"
+#include "person.h"
 
 
 class seller : public common
@@ -44,11 +44,9 @@ public:
 class seller_impl final : public seller
 {
 public:
-	seller_impl() :
-		seller() {}
+	seller_impl();
 
-	seller_impl(seller& obj):
-		seller(obj) {}
+	explicit seller_impl(seller& obj);
 
 
 	seller& get();

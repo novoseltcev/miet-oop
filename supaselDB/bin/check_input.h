@@ -1,8 +1,6 @@
 #pragma once
-#include <string>
 #include<iostream>
-#include"date.h"
-#include "exception_input.h"
+#include <string>
 
 void is_double(std::istream&, double*);
 

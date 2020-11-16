@@ -3,6 +3,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #include "date.h"
+#include "exception_input.h"
 using namespace std;
 
 
@@ -87,7 +88,7 @@ uint_fast16_t date::str_month_to_int16(string& month) {
 }
 
 uint_fast16_t date::ch_month_to_int16(char* month) {
-	string* names = month_names();
+	auto* names = month_names();
 	for (uint_fast16_t i = 0; i < 12; i++) { if (strcmp(month, names[i].c_str()) == 0) { return i + 1; } }
 	return 0;
 }
@@ -108,16 +109,16 @@ ostream& operator<<(ostream& lhs, date& rhs) {
 	return lhs;
 }
 
-date& operator>>(istream& lhs, date& v_data) {
+date& operator>>(istream& lhs, date& v_date) {
 	int v_day, v_month, v_year;
 	cout << "¬ведите дату ( день.мес€ц.год ): ";
 	while (true) {
 		try {
 			is_date(lhs, &v_year, &v_month, &v_day);
-			date v_data(v_year, v_month, v_day);
-			return v_data;
+			v_date = *new date(v_year, v_month, v_day);
+			return v_date;
 		}
-		catch (exception_input e) {
+		catch (exception_input& e) {
 			system("color 74");
 			cout << "ќшибка ввода: " << e.what() << endl;
 			system("color 71");
