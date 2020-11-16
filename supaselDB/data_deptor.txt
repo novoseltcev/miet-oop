@@ -1,0 +1,4 @@
+3
+Microsoft;California;2;324324;1;1;1999;
+Apple;NewYork;1;525.45;2;11;2018;
+BostonDynamics;Boston;1;2556.45;12;12;2012;
