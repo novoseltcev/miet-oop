@@ -32,77 +32,6 @@ data_base<T>::~data_base() noexcept { db_.clear(); }
 
 
 template <typename T>
-void data_base<T>::table_line() {
-	const string var = typeid(T).name() == typeid(supplier).name() ? ""	: "-------";
-	cout << "-------------------------|-------------------------|------------------" + var +
-		"|----------------------|--------------|" << endl;
-}
-
-template <typename T>
-void data_base<T>::table_head() {
-	string separator_txt, main_txt;
-	T::table_name(separator_txt, main_txt);
-
-	cout << separator_txt << endl;
-	cout << main_txt << endl;
-	cout << separator_txt << endl;
-	table_line();
-}
-
-template <typename T>
-double data_base<T>::table_body() {
-	double sum = 0;
-	for (T& obj : db_) {
-		cout << obj;
-		sum += obj.get_balance();
-		table_line();
-	}
-	return sum;
-}
-
-template <typename T>
-void data_base<T>::table_end(const double sum) {
-	const auto length = typeid(T) == typeid(supplier) ? 86 : typeid(T) == typeid(seller) ? 93 : 0;
-	const string table_end_text = typeid(T) == typeid(supplier)
-									? "Общая задолженность:"
-		                            : typeid(T) == typeid(seller)
-										? "Общее сальдо продаж:"
-										: "UNKNOWN";
-	cout << table_end_text;
-	cout.setf(ios::right | ios::fixed);
-	cout.precision(2);
-	cout.width(length);
-	cout << sum << "  |" << endl;
-	cout.unsetf(ios::right | ios::fixed);
-	cout << "Кол-во товаров в базе: ";
-	cout.width(length);
-	cout.setf(ios::left);
-	cout.width(abs(length - (typeid(T) == typeid(supplier) or typeid(T) == typeid(seller) ? 3 : 0)));
-	cout << db_.size();
-	cout << "  |" << endl;
-	cout.unsetf(ios::left);
-}
-
-template <typename T>
-void data_base<T>::table() {
-	if (!is_empty()) {
-		table_head();
-		table_end(table_body());
-	}
-	else {
-		cout.width(63);
-		const string var = typeid(T).name() == typeid(supplier).name()
-			? "поставщиках."
-			: typeid(T).name() == typeid(supplier).name()
-			? "продавцах."
-			: "текущем типе данных";
-		cout << "В Базе отсутствует информация о "
-			<< var << endl;
-	}
-}
-
-
-template <typename T>
 void data_base<T>::load(const string& filename) {
 	ifstream fp(filename);
 	if (!fp.is_open()) {
@@ -158,10 +87,98 @@ void data_base<seller>::save(const string& filename) {
 
 
 template <typename T>
+void data_base<T>::table_line() {
+	const string var = typeid(T).name() == typeid(supplier).name() ? "" : "-------";
+	cout << "-------------------------|-------------------------|------------------" + var +
+		"|----------------------|--------------|" << endl;
+}
+
+template <typename T>
+void data_base<T>::table_head() {
+	string separator_txt, main_txt;
+	T::table_name(separator_txt, main_txt);
+
+	cout << separator_txt << endl;
+	cout << main_txt << endl;
+	cout << separator_txt << endl;
+	table_line();
+}
+
+template <typename T>
+double data_base<T>::table_body() {
+	double sum = 0;
+	for (T& obj : db_) {
+		cout << obj;
+		sum += obj.get_balance();
+		table_line();
+	}
+	return sum;
+}
+
+template <typename T>
+void data_base<T>::table_end(const double sum) {
+	const auto length = typeid(T) == typeid(supplier) ? 86 : typeid(T) == typeid(seller) ? 93 : 0;
+	const string table_end_text = typeid(T) == typeid(supplier)
+		? "Общая задолженность:"
+		: typeid(T) == typeid(seller)
+		? "Общее сальдо продаж:"
+		: "UNKNOWN";
+	cout << table_end_text;
+	cout.setf(ios::right | ios::fixed);
+	cout.precision(2);
+	cout.width(length);
+	cout << sum << "  |" << endl;
+	cout.unsetf(ios::right | ios::fixed);
+	cout << "Кол-во товаров в базе: ";
+	cout.width(length);
+	cout.setf(ios::left);
+	cout.width(abs(length - (typeid(T) == typeid(supplier) or typeid(T) == typeid(seller) ? 3 : 0)));
+	cout << db_.size();
+	cout << "  |" << endl;
+	cout.unsetf(ios::left);
+}
+
+
+template <typename T>
+void data_base<T>::table() {
+	if (!is_empty()) {
+		table_head();
+		table_end(table_body());
+	}
+	else {
+		cout.width(63);
+		const string var = typeid(T).name() == typeid(supplier).name()
+			? "поставщиках."
+			: typeid(T).name() == typeid(supplier).name()
+			? "продавцах."
+			: "текущем типе данных";
+		cout << "В Базе отсутствует информация о "
+			<< var << endl;
+	}
+}
+
+
+template <typename T>
+int data_base<T>::size() { return db_.size(); }
+
+template <typename T>
 bool data_base<T>::is_empty() { return db_.empty(); }
 
 template <typename T>
+void data_base<T>::push_front(T& obj) { db_.push_front(obj); }
+
+template <typename T>
+void data_base<T>::insert(const int pos, T& obj) {
+	auto j = db_.begin();
+	for (auto i = 0; i < pos; i++, ++j){}
+	db_.insert(j, obj);
+}
+
+template <typename T>
 void data_base<T>::push_back(T& obj) { db_.push_back(obj); }
+
+template<typename T>
+void data_base<T>::pop_front() { db_.pop_front(); }
 
 template <typename T>
 list<T> data_base<T>::get() { return db_; }

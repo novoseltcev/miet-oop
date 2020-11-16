@@ -27,16 +27,17 @@ SUPPLIERS:
 			cout << "| Переключиться на продавцов  ............ 1 |" << endl;
 			cout << "|--------------------------------------------|" << endl;
 			cout << "| Добавить поставщика в БД  .............. 2 |" << endl;
-			cout << "| Распечатать БД поставщиков  ............ 3 |" << endl;
-			cout << "| Поиск поставщика по названию фирмы  .... 4 |" << endl;
-			cout << "| Фильтр по типу поставщика  ............. 5 |" << endl;
-			cout << "| Фильтр по дате поставки ................ 6 |" << endl;
-			cout << "| Сортировка по сальдо  .................. 7 |" << endl;
-			cout << "| Проверка на вхождение объекта  ......... 8 |" << endl;
+			cout << "| Распечатать БД поставок  ............... 3 |" << endl;
+			cout << "| Удалить первую поставку  ............... 4 |" << endl;
+			cout << "| Поиск поставки по названию фирмы  ...... 5 |" << endl;
+			cout << "| Фильтр по типу поставщика  ............. 6 |" << endl;
+			cout << "| Фильтр по дате поставки ................ 7 |" << endl;
+			cout << "| Сортировка по сальдо  .................. 8 |" << endl;
+			cout << "| Проверка на вхождение объекта  ......... 9 |" << endl;
 			cout << "|--------------------------------------------|" << endl;
-			cout << "| Распечатать БД должников ,  ............ 9 |" << endl;
-			cout << "| Поиск должников  ...................... 10 |" << endl;
-			cout << "| Выход из программы  ................... 11 |" << endl;
+			cout << "| Распечатать БД должников   ............ 10 |" << endl;
+			cout << "| Поиск должников  ...................... 11 |" << endl;
+			cout << "| Выход из программы  ................... 12 |" << endl;
 			cout << "|--------------------------------------------|" << endl;
 			cout << "           Введите номер функции: ";
 			while (true) {
@@ -62,30 +63,125 @@ SUPPLIERS:
 		case 2:
 			{
 				system("cls");
-				
+
 				int start_count;
-				cout << "Введите кол-во записей: ";
-				while (true) {
-					try {
-						is_int(cin, &start_count, 1, 10);
+				if (!supplier_data_base.is_empty()) {
+					int t_flag;
+					{
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "|      Меню добавления поставки в базу данных       |" << endl;
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "| Добавить элемент(ы) в начало ...................1 |" << endl;
+						cout << "| Добавить элемент(ы) в определённую позицию  ... 2 |" << endl;
+						cout << "| Добавить элемент(ы) в конец ....................3 |" << endl;
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "| Отмена .........................................4 |" << endl;
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "            Введите номер операции:\t";
+						while (true) {
+							try {
+								is_int(cin, &t_flag, 1, 4);
+								break;
+							}
+							catch (exception_input& e) {
+								system("color 74");
+								cout << "Ошибка ввода: " << e.what() << endl;
+								system("color 71");
+								cout << "Повторите ввод: ";
+							}
+						}
+						cout << endl;
+						if (t_flag == 4) { continue; }
+					}
+					cout << endl << "Введите кол-во записей(от 1 до 10): ";
+					while (true) {
+						try {
+							is_int(cin, &start_count, 1, 10);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
+					switch (t_flag) {
+					case 1:
+					{
+						for (auto i = 1; i <= start_count; i++) {
+							system("cls");
+							cout << "Добавление в начало" << endl;
+							cout << "Введено: " << i << " из " << start_count << endl << endl;
+							supplier cur_obj;
+							cin >> cur_obj;
+							supplier_data_base.push_front(cur_obj);
+						}
 						break;
 					}
-					catch (exception_input& e) {
-						system("color 74");
-						cout << "Ошибка ввода: " << e.what() << endl;
-						system("color 71");
-						cout << "Повторите ввод: ";
+					case 2:
+					{
+						for (auto i = 1; i <= start_count; i++) {
+							system("cls");
+							cout << "Добавление в произвольное место" << endl;
+							cout << "Введено: " << i << " из " << start_count << endl << endl;
+							int pos;
+							auto db_size = supplier_data_base.size();
+							cout << "Введите позицию вставки: ";
+							while (true) {
+								try {
+									is_int(cin, &pos, 1, db_size);
+									break;
+								}
+								catch (exception_input& e) {
+									system("color 74");
+									cout << "Ошибка ввода: " << e.what() << endl;
+									system("color 71");
+									cout << "Повторите ввод: ";
+								}
+							}
+							supplier cur_obj;
+							cin >> cur_obj;
+							supplier_data_base.insert(pos - 1, cur_obj);
+						}
+						break;
+					}
+					case 3:
+					{
+						for (auto i = 1; i <= start_count; i++) {
+							system("cls");
+							cout << "Добавление в конец" << endl;
+							cout << "Введено: " << i << " из " << start_count << endl << endl;
+							supplier cur_obj;
+							cin >> cur_obj;
+							supplier_data_base.push_back(cur_obj);
+						}
+						break;
+					}
+					default: { break; }
 					}
 				}
-				
-				cout << endl;
-				for (auto i = 1; i <= start_count; i++) {
-					system("cls");
-					cout << "Введите кол-во записей: " << start_count << endl;
-					cout << i << " из " << start_count << endl;
-					supplier cur_obj;
-					cin >> cur_obj;
-					supplier_data_base.push_back(cur_obj);
+				else {
+					cout << endl << "Введите кол-во записей(от 1 до 10): ";
+					while (true) {
+						try {
+							is_int(cin, &start_count, 1, 10);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
+					for (auto i = 1; i <= start_count; i++) {
+						system("cls");
+						cout << "Введено: " << i << " из " << start_count << endl << endl;
+						supplier cur_obj;
+						cin >> cur_obj;
+						supplier_data_base.push_back(cur_obj);
+					}
 				}
 				break;
 			}
@@ -102,13 +198,45 @@ SUPPLIERS:
 		case 4:
 			{
 				system("cls");
+
+				if (!supplier_data_base.is_empty()) {
+					data_base<supplier> deleting_supplier;
+					deleting_supplier.push_front(*supplier_data_base.get().begin());
+					deleting_supplier.table();
+					cout << endl;
+					cout << "Удалить запись о поставке: Да - 1, Нет - 2" << endl;
+					cout << "Введите номер функции:\t";
+					int t_flag;
+					while (true) {
+						try {
+							is_int(cin, &t_flag, 1, 2);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
+					if (t_flag == 1) {
+						supplier_data_base.pop_front();
+						cout << "Успешно..." << endl;
+					}
+				}
+				else { cout << "В БД отсутствуют записи." << endl; }
+				break;
+			}
+		case 5:
+			{
+				system("cls");
 				
 				auto copied_data_base = search(supplier_data_base);
 				if (!copied_data_base.is_empty()) { copied_data_base.table(); }
 				else { cout << "Не найдено совпадений." << endl; }
 				break;
 			}
-		case 5:
+		case 6:
 			{
 				system("cls");
 				
@@ -119,33 +247,39 @@ SUPPLIERS:
 				else { cout << "Не найдено совпадений." << endl; }
 				break;
 			}
-		case 6:
+		case 7:
 			{
 				system("cls");
 				
-				date val_date;
-				cin >> val_date;
 				int t_flag;
 				{
+					cout << "|--------------------------------------------|" << endl;
+					cout << "|       Меню поиска поставок по дате         |" << endl;
+					cout << "|--------------------------------------------|" << endl;
+					cout << "| Поставки с датой меньше заданной ........1 |" << endl;
+					cout << "| Поставки с заданной датой  ............. 2 |" << endl;
+					cout << "| Поставки с датой больше заданной ........3 |" << endl;
+					cout << "|--------------------------------------------|" << endl;
+					cout << "| Отмена ..................................4 |" << endl;
+					cout << "|--------------------------------------------|" << endl;
+					cout << "         Введите номер функции:\t";
+					while (true) {
+						try {
+							is_int(cin, &t_flag, 1, 4);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
 					cout << endl;
-					cout << "Поставки с датой меньше заданной ........1" << endl;
-					cout << "Поставки с заданной датой  ............. 2" << endl;
-					cout << "Поставки с датой больше заданной ........3" << endl;
-					cout << "......................................... " << endl;
-					cout << "Введите номер функции:\t";
+					if (t_flag == 4) { continue; }
 				}
-				while (true) {
-					try {
-						is_int(cin, &t_flag, 1, 3);
-						break;
-					}
-					catch (exception_input& e) {
-						system("color 74");
-						cout << "Ошибка ввода: " << e.what() << endl;
-						system("color 71");
-						cout << "Повторите ввод: ";
-					}
-				}
+				date val_date;
+				cin >> val_date;
 				data_base<supplier> copied_data_base;
 				switch (t_flag) {
 				case 1:
@@ -182,14 +316,14 @@ SUPPLIERS:
 				}
 				break;
 			}
-		case 7:
+		case 8:
 			{
 				system("cls");
 				
 				supplier_data_base.sort(sort_by_balance);
 				break;
 			}
-		case 8:
+		case 9:
 			{
 				system("cls");
 				
@@ -209,7 +343,7 @@ SUPPLIERS:
 				}
 				break;
 			}
-		case 9:
+		case 10:
 			{
 				system("cls");
 				
@@ -217,7 +351,7 @@ SUPPLIERS:
 				debtors_data_base.table();
 				break;
 			}
-		case 10:
+		case 11:
 			{
 				system("cls");
 				
@@ -252,7 +386,7 @@ SUPPLIERS:
 				}
 				break;
 			}
-		case 11:
+		case 12:
 			{
 				system("cls");
 				
@@ -273,16 +407,17 @@ SELLERS:
 			cout << "|--------------------------------------------|" << endl;
 			cout << "| Переключиться на поставщиков  .......... 1 |" << endl;
 			cout << "|--------------------------------------------|" << endl;
-			cout << "| Добавить продавца в БД  ................ 2 |" << endl;
+			cout << "| Добавить продажу в БД  ................. 2 |" << endl;
 			cout << "| Распечатать БД продавцов   ............. 3 |" << endl;
-			cout << "| Поиск продавца по ФИО  ................. 4 |" << endl;
-			cout << "| Фильтр по дате продажи ................. 5 |" << endl;
-			cout << "| Сортировка по сальдо  .................. 6 |" << endl;
-			cout << "| Проверка на вхождение объекта  ......... 7 |" << endl;
+			cout << "| Удалить первую продажу  ................ 4 |" << endl;
+			cout << "| Поиск продавца по ФИО  ................. 5 |" << endl;
+			cout << "| Фильтр по дате продажи ................. 6 |" << endl;
+			cout << "| Сортировка по сальдо  .................. 7 |" << endl;
+			cout << "| Проверка на вхождение объекта  ......... 8 |" << endl;
 			cout << "|--------------------------------------------|" << endl;
-			cout << "| Выход из программы  .................... 8 |" << endl;
+			cout << "| Выход из программы  .................... 9 |" << endl;
 			cout << "|--------------------------------------------|" << endl;
-			cout << "           Введите номер функции: ";
+			cout << "          Введите номер функции: ";
 			while (true) {
 				try {
 					is_int(cin, &flag, 1, 8);
@@ -307,29 +442,126 @@ SELLERS:
 		case 2:
 			{
 				system("cls");
-				
+
 				int start_count;
-				cout << "Введите кол-во записей: ";
-				while (true) {
-					try {
-						is_int(cin, &start_count, 1, 10);
+				if (!seller_data_base.is_empty()) {
+					int t_flag;
+					{
+
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "|       Меню добавления продажи в базу данных       |" << endl;
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "| Добавить элемент(ы) в начало ...................1 |" << endl;
+						cout << "| Добавить элемент(ы) в определённую позицию  ... 2 |" << endl;
+						cout << "| Добавить элемент(ы) в конец ....................3 |" << endl;
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "| Отмена .........................................4 |" << endl;
+						cout << "|---------------------------------------------------|" << endl;
+						cout << "            Введите номер операции:\t";
+						while (true) {
+							try {
+								is_int(cin, &t_flag, 1, 4);
+								break;
+							}
+							catch (exception_input& e) {
+								system("color 74");
+								cout << "Ошибка ввода: " << e.what() << endl;
+								system("color 71");
+								cout << "Повторите ввод: ";
+							}
+						}
+						cout << endl;
+						if (t_flag == 4) { continue; }
+					}
+					cout << endl << "Введите кол-во записей(от 1 до 10): ";
+					while (true) {
+						try {
+							is_int(cin, &start_count, 1, 10);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
+					switch (t_flag) {
+					case 1:
+					{
+						for (auto i = 1; i <= start_count; i++) {
+							system("cls");
+							cout << "Добавление в начало" << endl;
+							cout << "Введено: " << i << " из " << start_count << endl << endl;
+							seller cur_obj;
+							cin >> cur_obj;
+							seller_data_base.push_front(cur_obj);
+						}
 						break;
 					}
-					catch (exception_input& e) {
-						system("color 74");
-						cout << "Ошибка ввода: " << e.what() << endl;
-						system("color 71");
-						cout << "Повторите ввод: ";
+					case 2:
+					{
+						for (auto i = 1; i <= start_count; i++) {
+							system("cls");
+							cout << "Добавление в произвольное место" << endl;
+							cout << "Введено: " << i << " из " << start_count << endl << endl;
+							int pos;
+							auto db_size = supplier_data_base.size();
+							cout << "Введите позицию вставки: ";
+							while (true) {
+								try {
+									is_int(cin, &pos, 1, db_size);
+									break;
+								}
+								catch (exception_input& e) {
+									system("color 74");
+									cout << "Ошибка ввода: " << e.what() << endl;
+									system("color 71");
+									cout << "Повторите ввод: ";
+								}
+							}
+							seller cur_obj;
+							cin >> cur_obj;
+							seller_data_base.insert(pos - 1, cur_obj);
+						}
+						break;
+					}
+					case 3:
+					{
+						for (auto i = 1; i <= start_count; i++) {
+							system("cls");
+							cout << "Добавление в конец" << endl;
+							cout << "Введено: " << i << " из " << start_count << endl << endl;
+							seller cur_obj;
+							cin >> cur_obj;
+							seller_data_base.push_back(cur_obj);
+						}
+						break;
+					}
+					default: { break; }
 					}
 				}
-				cout << endl;
-				for (auto i = 1; i <= start_count; i++) {
-					system("cls");
-					cout << "Введите кол-во записей: " << start_count << endl;
-					cout << i << " из " << start_count << endl;
-					seller cur_obj;
-					cin >> cur_obj;
-					seller_data_base.push_back(cur_obj);
+				else {
+					cout << endl << "Введите кол-во записей(от 1 до 10): ";
+					while (true) {
+						try {
+							is_int(cin, &start_count, 1, 10);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
+					for (auto i = 1; i <= start_count; i++) {
+						system("cls");;
+						cout << "Введено: " << i << " из " << start_count << endl << endl;
+						seller cur_obj;
+						cin >> cur_obj;
+						seller_data_base.push_back(cur_obj);
+					}
 				}
 				break;
 			}
@@ -345,39 +577,77 @@ SELLERS:
 			{
 				system("cls");
 				
-				auto copied_data_base = search(seller_data_base);
-				if (!copied_data_base.is_empty()) copied_data_base.table();
-				else cout << "Не найдено совпадений." << endl;
+				if (!seller_data_base.is_empty()) {
+					data_base<seller> deleting_seller;
+					deleting_seller.push_front(*seller_data_base.get().begin());
+					deleting_seller.table();
+					cout << endl;
+					cout << "Удалить запись о продаже: Да - 1, Нет - 2" << endl;
+					cout << "Введите номер функции:\t";
+					int t_flag;
+					while (true) {
+						try {
+							is_int(cin, &t_flag, 1, 2);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
+					if (t_flag == 1) {
+						seller_data_base.pop_front();
+						cout << "Успешно..." << endl;
+					}
+				}
+				else { cout << "В БД отсутствуют записи." << endl; }
 				break;
 			}
 		case 5:
 			{
 				system("cls");
 				
+				auto copied_data_base = search(seller_data_base);
+				if (!copied_data_base.is_empty()) copied_data_base.table();
+				else cout << "Не найдено совпадений." << endl;
+				break;
+			}
+		case 6:
+			{
+				system("cls");
+				
+				int t_flag;
+				{
+					cout << "|--------------------------------------------|" << endl;
+					cout << "|        Меню поиска продаж по дате          |" << endl;
+					cout << "|--------------------------------------------|" << endl;
+					cout << "| Поставки с датой меньше заданной ........1 |" << endl;
+					cout << "| Поставки с заданной датой  ............. 2 |" << endl;
+					cout << "| Поставки с датой больше заданной ........3 |" << endl;
+					cout << "|--------------------------------------------|" << endl;
+					cout << "| Отмена ..................................4 |" << endl;
+					cout << "|--------------------------------------------|" << endl;
+					cout << "         Введите номер функции:\t";
+					while (true) {
+						try {
+							is_int(cin, &t_flag, 1, 4);
+							break;
+						}
+						catch (exception_input& e) {
+							system("color 74");
+							cout << "Ошибка ввода: " << e.what() << endl;
+							system("color 71");
+							cout << "Повторите ввод: ";
+						}
+					}
+					cout << endl;
+					if (t_flag == 4) { continue; }
+				}
 				data_base<seller> copied_data_base;
 				date val_date;
 				cin >> val_date;
-				int t_flag;
-				{
-					cout << endl;
-					cout << "Продажи с датой меньше заданной ........1" << endl;
-					cout << "Продажи с заданной датой  ............. 2" << endl;
-					cout << "Продажи с датой больше заданной ........3" << endl;
-					cout << "......................................... " << endl;
-					cout << "Введите номер функции:\t";
-				}
-				while (true) {
-					try {
-						is_int(cin, &t_flag, 1, 3);
-						break;
-					}
-					catch (exception_input& e) {
-						system("color 74");
-						cout << "Ошибка ввода: " << e.what() << endl;
-						system("color 71");
-						cout << "Повторите ввод: ";
-					}
-				}
 				switch (t_flag) {
 				case 1:
 					{
@@ -413,14 +683,14 @@ SELLERS:
 				}
 				break;
 			}
-		case 6:
+		case 7:
 			{
 				system("cls");
 				
 				seller_data_base.sort(sort_by_balance);
 				break;
 			}
-		case 7:
+		case 8:
 			{
 				system("cls");
 				
@@ -440,7 +710,7 @@ SELLERS:
 				}
 				break;
 			}
-		case 8:
+		case 9:
 			{
 				system("cls");
 				

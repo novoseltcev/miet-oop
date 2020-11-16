@@ -43,11 +43,17 @@ private:
 public:
 	void table();
 
-
+	int size();
+	
 	bool is_empty();
+
+	void push_front(T&);
+
+	void insert(int, T&);
 
 	void push_back(T&);
 
+	void pop_front();
 
 	friend data_base search(data_base&);
 
