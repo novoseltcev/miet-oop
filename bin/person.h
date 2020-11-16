@@ -10,7 +10,7 @@ class person
 	std::string surname_{};
 	std::string name_{};
 	std::string middle_name_{};
-	
+
 public:
 	person();
 
@@ -18,13 +18,15 @@ public:
 
 	person(const person&);
 
-	~person() = default;
+	~person() noexcept = default;
+
 
 	std::string get_surname();
 
 	std::string get_name();
 
 	std::string get_middle_name();
+
 
 	person& operator=(person&);
 

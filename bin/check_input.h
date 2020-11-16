@@ -1,11 +1,15 @@
 #pragma once
 #include <string>
 #include<iostream>
+#include"date.h"
+#include "exception_input.h"
 
-void input_double(double*);
+void is_double(std::istream&, double*);
 
-bool name_fail(std::string&);
+void is_correct_string(std::istream&, std::string&, int);
 
-void input_string(std::string&, int);
+void is_int(std::istream&, int*, int, int);
 
-void input_int_with_border(int*, int, int);
+void is_name(std::istream&, std::string&, int);
+
+void is_date(std::istream&, int*, int*, int*);
