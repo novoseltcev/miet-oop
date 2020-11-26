@@ -1,6 +1,7 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
 
 #include "seller.h"
+#include<fstream>
 #include "exception_input.h"
 using namespace std;
 
@@ -9,7 +10,7 @@ seller::seller():
 	common() {}
 
 
-seller::seller(person& val_person, const double val_balance, date& val_data) :
+seller::seller(const person& val_person, const double val_balance, const date& val_data) :
 	common(val_balance, val_data),
 	person_(val_person) {}
 
@@ -28,10 +29,10 @@ string seller::get_name() { return person_.get_name(); }
 
 string seller::get_middle_name() { return person_.get_middle_name(); }
 
-person seller::get_person() { return *new person(person_); }
+person seller::get_person() { return person(person_); }
 
 
-void seller::table_name(std::string& separator_txt, std::string& main_txt) {
+void seller::table_name(string& separator_txt, string& main_txt) {
 	separator_txt =
 		"                         |                         |                         |                      |              |";
 	main_txt =
@@ -39,20 +40,20 @@ void seller::table_name(std::string& separator_txt, std::string& main_txt) {
 }
 
 
-seller& seller::operator=(seller& right) {
+seller& seller::operator=(const seller& right) {
 	date__ = right.date__;
 	balance__ = right.balance__;
 	person_ = right.person_;
 	return *this;
 }
 
-bool operator==(seller& lhs, seller& rhs) {
+bool operator==(const seller& lhs, const seller& rhs) {
 	return lhs.person_ == rhs.person_
-		&& abs(lhs.get_balance() - rhs.get_balance()) < .01
+		&& abs(lhs.balance__ - rhs.balance__) < .01
 		&& lhs.date__ == rhs.date__;
 }
 
-ostream& operator<<(ostream& lhs, seller& rhs) {
+ostream& operator<<(ostream& lhs, const seller& rhs) {
 	lhs << rhs.person_;
 
 	lhs << rhs.date__;
@@ -60,7 +61,7 @@ ostream& operator<<(ostream& lhs, seller& rhs) {
 	lhs.setf(ios::right | ios::fixed);
 	lhs.width(12);
 	lhs.precision(2);
-	lhs << rhs.get_balance();
+	lhs << rhs.balance__;
 	lhs.unsetf(ios::right | ios::fixed);
 	lhs << "  |" << endl;
 
@@ -73,7 +74,7 @@ seller& operator>>(istream& lhs, seller& rhs) {
 	date v_data{};
 
 	lhs >> v_person;
-	cout << "Âגוהטעו סאכüהמ: ";
+	cout << "Enter the balance: ";
 	while (true) {
 		try {
 			is_double(lhs, &v_balance);
@@ -94,44 +95,35 @@ seller& operator>>(istream& lhs, seller& rhs) {
 	return rhs;
 }
 
-ostream& operator<<(ostream& lhs, seller_impl& rhs) {
-	lhs << rhs.get_surname();
-	lhs << ";";
-	lhs << rhs.get_name();
-	lhs << ";";
-	lhs << rhs.get_middle_name();
-	lhs << ";";
-	lhs << rhs.get_balance();
-	lhs << ";";
-	lhs << rhs.get_day();
-	lhs << ";";
-	lhs << rhs.get_month();
-	lhs << ";";
-	lhs << rhs.get_year();
-	lhs << ";\n";
+ofstream& operator<<(ofstream& lhs, const seller& rhs) {
+	auto t_person = rhs.person_;
+	auto t_date = rhs.date__;
+	lhs << t_person.get_surname()
+		<< ";"
+		<< t_person.get_name()
+	    << ";"
+	    << t_person.get_middle_name()
+	    << ";"
+	    << t_date.get_day()
+	    << ";"
+	    << t_date.get_month()
+	    << ";"
+	    << t_date.get_year()
+	    << ";"
+	    << rhs.balance__
+	    << ";\n";
 	return lhs;
 }
 
-
-seller_impl& operator>>(istream& lhs, seller_impl& rhs) {
-	auto* buff = new char[100];
-	lhs.getline(buff, 100);
+seller& operator>>(ifstream& lhs, seller& rhs) {
+	auto* buff = new char[80];
+	lhs.getline(buff, 80);
 	auto list_buff = seller::split(buff, ";");
-	auto v_surname = list_buff[0];
-	auto v_name = list_buff[1];
-	auto v_middle_name = list_buff[2];
-	const auto v_balance = stod(list_buff[3]);
-	const auto v_day = stoi(list_buff[4]);
-	const auto v_month = stoi(list_buff[5]);
-	const auto v_year = stoi(list_buff[6]);
-	rhs.person_ = *new person(v_surname, v_name, v_middle_name);
-	rhs.balance__ = v_balance;
-	rhs.date__ = *new date(v_year, v_month, v_day);
+
+	person t_person(list_buff[0], list_buff[1], list_buff[2]);
+	rhs.person_ = person(list_buff[0], list_buff[1], list_buff[2]);
+	rhs.date__ = date(stoi(list_buff[5]), stoi(list_buff[4]), stoi(list_buff[3]));
+	rhs.balance__ = stod(list_buff[6]);
+	delete[] buff;
 	return rhs;
 }
-
-seller_impl::seller_impl(): seller() {}
-
-seller_impl::seller_impl(seller& obj): seller(obj) {}
-
-seller& seller_impl::get() { return *new seller(person_, get_balance(), get_date()); }

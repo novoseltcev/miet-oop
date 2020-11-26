@@ -20,9 +20,9 @@ vector<string> common::split(const string& str, const string& delimiter) {
 
 common::common():
 	balance__(0.),
-	date__(*new date()) {}
+	date__(date()) {}
 
-common::common(const double val_balance, date& val_data):
+common::common(const double val_balance, const date& val_data):
 	balance__(val_balance),
 	date__(val_data) {}
 
@@ -43,7 +43,7 @@ int common::get_month() { return date__.get_month(); }
 
 double common::get_balance() { return balance__; }
 
-date& common::get_date() { return *new date(date__); }
+date common::get_date() { return date__; }
 
 
 void common::table_name(string& separator_txt, string& main_txt) {
@@ -52,15 +52,15 @@ void common::table_name(string& separator_txt, string& main_txt) {
 }
 
 
-common& common::operator=(common& right) {
-	balance__ = right.get_balance();
+common& common::operator=(const common& right) {
+	balance__ = right.balance__;
 	date__ = right.date__;
 	return *this;
 }
 
-bool operator==(common& lhs, common& rhs) {
-	return abs(lhs.get_balance() - rhs.get_balance()) < .01
+bool operator==(const common& lhs, const common& rhs) {
+	return abs(lhs.balance__ - rhs.balance__) < .01
 		&& lhs.date__ == rhs.date__;
 }
 
-bool operator!=(common& lhs, common& rhs) { return !(lhs == rhs); }
+bool operator!=(const common& lhs, const common& rhs) { return !(lhs == rhs); }

@@ -18,7 +18,7 @@ public:
 
 	common();
 
-	common(double, date&);
+	common(double, const date&);
 
 	common(const common& obj);
 
@@ -35,17 +35,17 @@ public:
 
 	double get_balance();
 
-	date& get_date();
+	date get_date();
 
 
 	static void table_name(std::string&, std::string&);
 
 
-	common& operator=(common&);
+	common& operator=(const common&);
 
-	friend bool operator==(common&, common&);
+	friend bool operator==(const common&, const common&);
 
-	friend bool operator!=(common&, common&);
+	friend bool operator!=(const common&, const common&);
 
 
 	static std::vector<std::string> split(const std::string&, const std::string&);

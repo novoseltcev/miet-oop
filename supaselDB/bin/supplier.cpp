@@ -1,6 +1,7 @@
 // ReSharper disable CppClangTidyMiscUnconventionalAssignOperator
 
 #include "supplier.h"
+#include<fstream>
 #include <vector>
 #include "exception_input.h"
 using namespace std;
@@ -13,7 +14,7 @@ supplier::supplier():
 	type_(1) {}
 
 
-supplier::supplier(string& val_company, string& val_address, const int val_type, const double val_balance, date& val_data):
+supplier::supplier(string& val_company, string& val_address, const int val_type, const double val_balance, const date& val_data):
 	common(val_balance, val_data),
 	company_(val_company),
 	address_(val_address),
@@ -33,11 +34,11 @@ bool supplier::get_debtor() { return debtor_; }
 
 string supplier::get_company() { return company_; }
 
-void supplier::set_company(string& val_company) { company_ = val_company; }
+void supplier::set_company(const string& val_company) { company_ = val_company; }
 
 string supplier::get_address() { return address_; }
 
-void supplier::set_address(string& val_address) { address_ = val_address; }
+void supplier::set_address(const string& val_address) { address_ = val_address; }
 
 int supplier::get_type() { return type_; }
 
@@ -55,7 +56,7 @@ supplier& supplier::operator!() {
 	return *this;
 }
 
-supplier& supplier::operator=(supplier& right) {
+supplier& supplier::operator=(const supplier& right) {
 	company_ = right.company_;
 	address_ = right.address_;
 	date__ = right.date__;
@@ -64,28 +65,28 @@ supplier& supplier::operator=(supplier& right) {
 	return *this;
 }
 
-bool operator==(supplier& lhs, supplier& rhs) {
-	return lhs.get_company() == rhs.get_company() && lhs.get_address() == rhs.get_address()
-		&& lhs.get_type() == rhs.get_type() && abs(lhs.get_balance() - rhs.get_balance()) < .01
-		&& lhs.get_year() == rhs.get_year() && lhs.month_to_string() == rhs.month_to_string() && lhs.get_day() == rhs.get_day();
+bool operator==(const supplier& lhs, const supplier& rhs) {
+	return lhs.company_ == rhs.company_ && lhs.address_ == rhs.address_
+		&& lhs.type_ == rhs.type_ && abs(lhs.balance__ - rhs.balance__) < .01
+		&& lhs.date__ == rhs.date__;
 }
 
-ostream& operator<<(ostream& lhs, supplier& rhs) {
+ostream& operator<<(ostream& lhs, const supplier& rhs) {
 	lhs << " ";
 	lhs.width(24);
 	lhs.setf(ios::left);
-	lhs << rhs.get_company();
-	lhs << "| ";
+	lhs << rhs.company_
+	    << "| ";
 
 	lhs.width(24);
-	lhs << rhs.get_address();
-	lhs << "| ";
+	lhs << rhs.address_
+	    << "| ";
 
 	lhs.unsetf(ios::left);
 	lhs.setf(ios::right);
 	lhs.width(16);
-	if (rhs.get_type() == 1) lhs << "Cырьё";
-	if (rhs.get_type() == 2) lhs << "Оборудование";
+	if (rhs.type_ == 1) lhs << "Cырьё";
+	if (rhs.type_ == 2) lhs << "Оборудование";
 	lhs << " |";
 
 	lhs << rhs.date__;
@@ -93,7 +94,7 @@ ostream& operator<<(ostream& lhs, supplier& rhs) {
 	lhs.setf(ios::right | ios::fixed);
 	lhs.width(12);
 	lhs.precision(2);
-	lhs << rhs.get_balance();
+	lhs << rhs.balance__;
 	lhs.unsetf(ios::right | ios::fixed);
 	lhs << "  |" << endl;
 
@@ -107,7 +108,7 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 	double v_balance;
 	date v_data{};
 
-	cout << "Введите название фирмы: ";
+	cout << "Enter the company name: ";
 	while (true) {
 		try {
 			is_correct_string(lhs, v_company, 24);
@@ -120,7 +121,7 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 			cout << "Повторите ввод: ";
 		}
 	}
-	cout << "Введите юрдический адресс: ";
+	cout << "Enter legal address: ";
 	while (true) {
 		try {
 			is_correct_string(lhs, v_address, 24);
@@ -133,7 +134,7 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 			cout << "Повторите ввод: ";
 		}
 	}
-	cout << "Введите тип фирмы: ";
+	cout << "Enter the company type: ";
 	while (true) {
 		try {
 			is_int(lhs, &v_type, 1, 2);
@@ -141,12 +142,12 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 		}
 		catch (exception_input& e) {
 			system("color 74");
-			cout << "Ошибка ввода: " << e.what() << endl;
+			cout << "Input error: " << e.what() << endl;
 			system("color 71");
-			cout << "Повторите ввод: ";
+			cout << "Try again: ";
 		}
 	}
-	cout << "Введите сальдо: ";
+	cout << "Enter the balance: ";
 	while (true) {
 		try {
 			is_double(lhs, &v_balance);
@@ -170,6 +171,40 @@ supplier& operator>>(istream& lhs, supplier& rhs) {
 	return rhs;
 }
 
+
+ofstream& operator<<(ofstream& lhs, const supplier& rhs) {
+	auto t_date = rhs.date__;
+	lhs << rhs.company_
+		<< ";"
+		<< rhs.address_
+		<< ";"
+		<< rhs.type_
+		<< ";"
+		<< rhs.balance__
+		<< ";"
+	    << t_date.get_day()
+	    << ";"
+	    << t_date.get_month()
+	    << ";"
+	    << t_date.get_year()
+	    << ";\n";
+	return lhs;
+}
+
+supplier& operator>>(ifstream& lhs, supplier& rhs) {
+	auto* buff = new char[80];
+	lhs.getline(buff, 80);
+	auto list_buff = supplier::split(buff, ";");
+	rhs.company_ = list_buff[0];
+	rhs.address_ = list_buff[1];
+	rhs.type_ = static_cast<uint_fast8_t>(stoi(list_buff[2]));
+	rhs.balance__ = stod(list_buff[3]);
+	rhs.date__ = date(stoi(list_buff[4]), stoi(list_buff[5]), stoi(list_buff[6]));
+	delete[] buff;
+	return rhs;
+}
+
+
 ostream& operator<<(std::ostream& lhs, supplier_impl& rhs) {
 	lhs << rhs.get_company();
 	lhs << ";";
@@ -188,32 +223,8 @@ ostream& operator<<(std::ostream& lhs, supplier_impl& rhs) {
 	return lhs;
 }
 
-
-supplier_impl& operator>>(std::istream& lhs, supplier_impl& rhs) {
-	auto* buff = new char[100];
-	lhs.getline(buff, 100);
-	auto list_buff = supplier::split(buff, ";");
-
-	const auto v_company = list_buff[0];
-	const auto v_address = list_buff[1];
-	const auto v_type = static_cast<uint_fast8_t>(stoi(list_buff[2]));
-	const auto v_balance = stod(list_buff[3]);
-	const auto v_day = stoi(list_buff[4]);
-	const auto v_month = stoi(list_buff[5]);
-	const auto v_year = stoi(list_buff[6]);
-
-	rhs.company_ = v_company;
-	rhs.address_ = v_address;
-	rhs.type_ = v_type;
-	rhs.balance__ = v_balance;
-	rhs.date__ = *new date(v_year, v_month, v_day);
-	return rhs;
-}
-
 supplier_impl::supplier_impl(): supplier() {}
 
-supplier_impl::supplier_impl(supplier& obj): supplier(obj) {}
+supplier_impl::supplier_impl(const supplier& obj): supplier(obj) {}
 
-supplier& supplier_impl::get() {
-	return *new supplier(company_, address_, get_type(), get_balance(), get_date());
-}
+supplier supplier_impl::get() { return supplier(company_, address_, get_type(), get_balance(), get_date()); }

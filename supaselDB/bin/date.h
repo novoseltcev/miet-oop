@@ -12,9 +12,9 @@ class date
 	uint_fast16_t year_{};
 
 
-	static auto str_month_to_int16(std::string&) -> uint_fast16_t;
+	static auto str_month_to_int16(const std::string&) -> uint_fast16_t;
 
-	static uint_fast16_t ch_month_to_int16(char* month);
+	static uint_fast16_t ch_month_to_int16(const char* month);
 
 	static inline std::string* month_names();
 
@@ -25,13 +25,13 @@ public:
 
 	date(int, int, int);
 
-	date(uint_fast16_t, std::string&, uint_fast16_t);
+	date(uint_fast16_t, const std::string&, uint_fast16_t);
 
-	date(int, std::string&, int);
+	date(int, const std::string&, int);
 
-	date(uint_fast16_t year, char* month, uint_fast16_t day);
+	date(uint_fast16_t year, const char* month, uint_fast16_t day);
 
-	date(int year, char* month, int day);
+	date(int year, const char* month, int day);
 
 	date(const date&);
 
@@ -46,24 +46,24 @@ public:
 
 	uint_fast16_t get_day();
 
-	date get_data();
+	date get_date();
 
 
-	date& operator=(date&);
+	date& operator=(const date&);
 
-	friend std::ostream& operator<<(std::ostream&, date&);
+	friend std::ostream& operator<<(std::ostream&, const date&);
 
 	friend date& operator>>(std::istream&, date&);
 
-	friend bool operator==(date&, date&);
+	friend bool operator==(const date&, const date&);
 
-	friend bool operator<(date&, date&);
+	friend bool operator<(const date&, const date&);
 
-	friend bool operator<=(date&, date&);
+	friend bool operator<=(const date&, const date&);
 
-	friend bool operator>(date&, date&);
+	friend bool operator>(const date&, const date&);
 
-	friend bool operator>=(date&, date&);
+	friend bool operator>=(const date&, const date&);
 
-	friend bool operator!=(date&, date&);
+	friend bool operator!=(const date&, const date&);
 };

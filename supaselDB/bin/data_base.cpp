@@ -36,7 +36,7 @@ void data_base<T>::load(const string& filename) {
 	ifstream fp(filename);
 	if (!fp.is_open()) {
 		system("color 74");
-		cout << "Ошибка открытия файла " << filename << endl << endl;
+		cout << "File opening error: " << filename << endl << endl;
 		system("color 71");
 	}
 	else { fp >> *this; }
@@ -47,7 +47,7 @@ void data_base<T>::load(const string& filename, ifstream& fp) {
 	try { fp >> *this; }
 	catch (...) {
 		system("color 74");
-		cout << "Ошибка открытия файла " << filename << endl << endl;
+		cout << "File opening error: " << filename << endl << endl;
 		system("color 71");
 	}
 }
@@ -56,14 +56,13 @@ void data_base<supplier>::save(const string& filename) {
 	ofstream fp(filename, ios_base::in | ios_base::trunc);
 	if (!fp.is_open()) {
 		system("color 74");
-		cout << "Ошибка открытия файла " << filename << endl << endl;
+		cout << "File opening error: " << filename << endl << endl;
 		system("color 71");
 	}
 	else {
 		fp << db_.size() << "\n";
-		for (auto& obj : db_) {
-			supplier_impl n_obj(obj);
-			fp << n_obj;
+		for (const auto& obj : db_) {
+			fp << obj;
 		}
 	}
 }
@@ -72,15 +71,13 @@ void data_base<seller>::save(const string& filename) {
 	ofstream fp(filename, ios_base::in | ios_base::trunc);
 	if (!fp.is_open()) {
 		system("color 74");
-		cout << "Ошибка открытия файла " << filename << endl << endl;
+		cout << "File opening error: " << filename << endl << endl;
 		system("color 71");
-		cout << "Повторите ввод: ";
 	}
 	else {
 		fp << db_.size() << "\n";
-		for (auto& obj : db_) {
-			seller_impl n_obj(obj);
-			fp << n_obj;
+		for (const auto& obj : db_) {
+			fp << obj;
 		}
 	}
 }
@@ -88,13 +85,18 @@ void data_base<seller>::save(const string& filename) {
 
 template <typename T>
 void data_base<T>::table_line() {
-	const string var = typeid(T).name() == typeid(supplier).name() ? "" : "-------";
+	static_assert(is_same<T, supplier>::value or is_same<T, seller>::value, "undefinded for this data type");
+	string var = "";
+	if constexpr (is_same<T, seller>::value) {
+		var = "-------";
+	}
 	cout << "-------------------------|-------------------------|------------------" + var +
 		"|----------------------|--------------|" << endl;
 }
 
 template <typename T>
 void data_base<T>::table_head() {
+	static_assert(is_same<T, supplier>::value or is_same<T, seller>::value, "undefinded for this data type");
 	string separator_txt, main_txt;
 	T::table_name(separator_txt, main_txt);
 
@@ -106,6 +108,7 @@ void data_base<T>::table_head() {
 
 template <typename T>
 double data_base<T>::table_body() {
+	static_assert(is_same<T, supplier>::value or is_same<T, seller>::value, "undefinded for this data type");
 	double sum = 0;
 	for (T& obj : db_) {
 		cout << obj;
@@ -117,11 +120,12 @@ double data_base<T>::table_body() {
 
 template <typename T>
 void data_base<T>::table_end(const double sum) {
-	const auto length = typeid(T) == typeid(supplier) ? 86 : typeid(T) == typeid(seller) ? 93 : 0;
+	static_assert(is_same<T, supplier>::value or is_same<T, seller>::value, "undefinded for this data type");
+	const auto length = typeid(T) == typeid(supplier) ? 85 : typeid(T) == typeid(seller) ? 79 : 0;
 	const string table_end_text = typeid(T) == typeid(supplier)
-		? "Общая задолженность:"
+		? "Total debt: "
 		: typeid(T) == typeid(seller)
-		? "Общее сальдо продаж:"
+		? "The overall balance of the sales: "
 		: "UNKNOWN";
 	cout << table_end_text;
 	cout.setf(ios::right | ios::fixed);
@@ -141,6 +145,7 @@ void data_base<T>::table_end(const double sum) {
 
 template <typename T>
 void data_base<T>::table() {
+	static_assert(is_same<T, supplier>::value or is_same<T, seller>::value, "undefinded for this data type");
 	if (!is_empty()) {
 		table_head();
 		table_end(table_body());
@@ -148,34 +153,34 @@ void data_base<T>::table() {
 	else {
 		cout.width(63);
 		const string var = typeid(T).name() == typeid(supplier).name()
-			? "поставщиках."
+			? "suppliers."
 			: typeid(T).name() == typeid(supplier).name()
-			? "продавцах."
-			: "текущем типе данных";
-		cout << "В Базе отсутствует информация о "
+			? "sellers."
+			: "the current data type";
+		cout << "The Database does not contain information about"
 			<< var << endl;
 	}
 }
 
 
 template <typename T>
-int data_base<T>::size() { return db_.size(); }
+int data_base<T>::size() { return static_cast<int>(db_.size()); }
 
 template <typename T>
 bool data_base<T>::is_empty() { return db_.empty(); }
 
 template <typename T>
-void data_base<T>::push_front(T& obj) { db_.push_front(obj); }
+void data_base<T>::push_front(const T& obj) { db_.push_front(obj); }
 
 template <typename T>
-void data_base<T>::insert(const int pos, T& obj) {
+void data_base<T>::insert(const int pos, const T& obj) {
 	auto j = db_.begin();
 	for (auto i = 0; i < pos; i++, ++j){}
 	db_.insert(j, obj);
 }
 
 template <typename T>
-void data_base<T>::push_back(T& obj) { db_.push_back(obj); }
+void data_base<T>::push_back(const T& obj) { db_.push_back(obj); }
 
 template<typename T>
 void data_base<T>::pop_front() { db_.pop_front(); }
@@ -184,7 +189,8 @@ template <typename T>
 list<T> data_base<T>::get() { return db_; }
 
 
-bool data_base<supplier>::set_debtor(class date& val_data) {
+
+bool data_base<supplier>::set_debtor(const date& val_data) {
 	for (auto& obj : db_) {
 		if (obj.get_date() < val_data) { !obj; }
 	}
@@ -200,8 +206,8 @@ bool data_base<supplier>::search_debtor(data_base<supplier>& val_data_base) {
 
 bool data_base<supplier>::filter_by_type(data_base<supplier>& val_data_base) {
 	auto val_type = -1;
-	cout << "Примечание: 1 - поставщик сырья, 2 - поставщик оборудования" << endl;
-	cout << "Введите тип поставщика: ";
+	cout << "Note: 1-raw material supplier, 2-equipment supplier" << endl;
+	cout << "Enter the supplier type: ";
 	while (true) {
 		try {
 			is_int(cin, &val_type, 1, 2);
@@ -209,8 +215,9 @@ bool data_base<supplier>::filter_by_type(data_base<supplier>& val_data_base) {
 		}
 		catch (exception_input& e) {
 			system("color 74");
-			cout << "Ошибка ввода: " << e.what() << endl;
+			cout << "Input error: " << e.what() << endl;
 			system("color 71");
+			cout << "Try again: ";
 		}
 	}
 	for (auto& i : val_data_base.db_) {
@@ -223,7 +230,7 @@ data_base<supplier> search(data_base<supplier>& val_data_base) {
 	data_base<supplier> copied_data_base;
 	string v_company;
 	auto cur_db = val_data_base.get();
-	cout << "Введите фирму поставщика: ";
+	cout << "Enter the supplier's company: ";
 	while (true) {
 		try {
 			is_correct_string(cin, v_company, 24);
@@ -231,8 +238,9 @@ data_base<supplier> search(data_base<supplier>& val_data_base) {
 		}
 		catch (exception_input& e) {
 			system("color 74");
-			cout << "Ошибка ввода: " << e.what() << endl;
+			cout << "Input error: " << e.what() << endl;
 			system("color 71");
+			cout << "Try again: ";
 		}
 	}
 	for (auto sup_obj : cur_db) {
@@ -255,9 +263,10 @@ data_base<seller> search(data_base<seller>& val_data_base) {
 
 
 template <typename T>
-bool data_base<T>::filter_by_data(data_base<T>& val_data_base, date& val_data, bool func(T&, date&)) {
+bool data_base<T>::filter_by_data(data_base<T>& val_data_base, date& val_data, bool f(T&, date&)) {
+	static_assert(is_same<T, supplier>::value or is_same<T, seller>::value, "undefinded for this data type");
 	for (auto& i : val_data_base.db_) {
-		if (func(i, val_data)) { push_back(i); }
+		if (f(i, val_data)) { push_back(i); }
 	}
 	return (is_empty()) ? true : false;
 }
@@ -269,30 +278,30 @@ void data_base<T>::sort(bool comparator(T&, T&)) {
 }
 
 
-data_base<supplier>& operator>>(istream& lhs, data_base<supplier>& rhs) {
-	supplier_impl n_obj{};
+data_base<supplier>& operator>>(ifstream& lhs, data_base<supplier>& rhs) {
+	supplier n_obj;
 	auto* buff = new char[3];
 	lhs.getline(buff, 3);
 
 	const auto val_count = strcmp(buff, "") == 0 ? 0 : stoi(buff);
 	for (auto i = 0; i < val_count; i++) {
 		lhs >> n_obj;
-		auto t_obj(n_obj.get());
-		rhs.push_back(t_obj);
+		rhs.push_back(n_obj);
 	}
+	delete[] buff;
 	return rhs;
 }
 
-data_base<seller>& operator>>(istream& lhs, data_base<seller>& rhs) {
-	seller_impl n_obj{};
+data_base<seller>& operator>>(ifstream& lhs, data_base<seller>& rhs) {
+	seller n_obj;
 	auto* buff = new char[4];
 	lhs.getline(buff, 4);
 
 	const auto val_count = strcmp(buff, "") == 0 ? 0 : stoi(buff);
 	for (auto i = 0; i < val_count; i++) {
 		lhs >> n_obj;
-		auto t_obj(n_obj.get());
-		rhs.push_back(t_obj);
+		rhs.push_back(n_obj);
 	}
+	delete[] buff;
 	return rhs;
 }

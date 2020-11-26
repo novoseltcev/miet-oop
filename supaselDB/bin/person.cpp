@@ -27,35 +27,35 @@ string person::get_name() { return name_; }
 
 string person::get_middle_name() { return middle_name_; }
 
-person& person::operator=(person& right) {
-	surname_ = right.get_surname();
-	name_ = right.get_name();
-	middle_name_ = right.get_middle_name();
+person& person::operator=(const person& right) {
+	surname_ = right.surname_;
+	name_ = right.name_;
+	middle_name_ = right.middle_name_;
 	return *this;
 }
 
-ostream& operator<<(ostream& lhs, person& rhs) {
+ostream& operator<<(ostream& lhs, const person& rhs) {
 	lhs << " ";
 	lhs.width(24);
 	lhs.setf(ios::left);
-	lhs << rhs.get_surname();
+	lhs << rhs.surname_;
 	lhs << "| ";
 
 	lhs.width(24);
 	lhs.setf(ios::left);
-	lhs << rhs.get_name();
+	lhs << rhs.name_;
 	lhs << "| ";
 
 	lhs.width(24);
 	lhs.setf(ios::left);
-	lhs << rhs.get_middle_name();
+	lhs << rhs.middle_name_;
 	lhs << "|";
 	return lhs;
 }
 
 person& operator>>(istream& lhs, person& rhs) {
 	string v_surname, v_name, v_middle_name;
-	cout << "Введите Фамилию: ";
+	cout << "Enter the Surname: ";
 	while (true) {
 		try {
 			is_name(lhs, v_surname, 24);
@@ -69,7 +69,7 @@ person& operator>>(istream& lhs, person& rhs) {
 		}
 	}
 
-	cout << "Введите Имя: ";
+	cout << "Enter the Name: ";
 	while (true) {
 		try {
 			is_name(lhs, v_name, 24);
@@ -83,7 +83,7 @@ person& operator>>(istream& lhs, person& rhs) {
 		}
 	}
 
-	cout << "Введите Отчество: ";
+	cout << "Enter the Patronomyc: ";
 	while (true) {
 		try {
 			is_name(lhs, v_middle_name, 24);
@@ -104,10 +104,10 @@ person& operator>>(istream& lhs, person& rhs) {
 	return rhs;
 }
 
-bool operator==(person& lhs, person& rhs) {
-	return lhs.get_surname() == rhs.get_surname()
-		&& lhs.get_name() == rhs.get_name()
-		&& lhs.get_middle_name() == rhs.get_middle_name();
+bool operator==(const person& lhs, const person& rhs) {
+	return lhs.surname_ == rhs.surname_
+		&& lhs.name_ == rhs.name_
+		&& lhs.middle_name_ == rhs.middle_name_;
 }
 
-bool operator!=(person& lhs, person& rhs) { return !(lhs == rhs); }
+bool operator!=(const person& lhs, const person& rhs) { return !(lhs == rhs); }

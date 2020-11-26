@@ -12,32 +12,32 @@ date::date():
 	month_(1),
 	year_(1999) {}
 
-date::date(uint_fast16_t year, uint_fast16_t month, uint_fast16_t day):
+date::date(const uint_fast16_t year, const uint_fast16_t month, const uint_fast16_t day):
 	day_(day),
 	month_(month),
 	year_(year) {}
 
-date::date(int year, int month, int day) :
+date::date(const int year, const int month, const int day) :
 	day_(static_cast<uint_fast16_t>(day)),
 	month_(static_cast<uint_fast16_t>(month)),
 	year_(static_cast<uint_fast16_t>(year)) {}
 
-date::date(uint_fast16_t year, std::string& month, uint_fast16_t day):
+date::date(const uint_fast16_t year, const string& month, const uint_fast16_t day):
 	day_(day),
 	month_(str_month_to_int16(month)),
 	year_(year) {}
 
-date::date(int year, std::string& month, int day) :
+date::date(int year, const string& month, int day):
 	day_(static_cast<uint_fast16_t>(day)),
 	month_(str_month_to_int16(month)),
 	year_(static_cast<uint_fast16_t>(year)) {}
 
-date::date(uint_fast16_t year, char* month, uint_fast16_t day) :
+date::date(uint_fast16_t year, const char* month, uint_fast16_t day):
 	day_(day),
 	month_(ch_month_to_int16(month)),
 	year_(year) {}
 
-date::date(int year, char* month, int day) :
+date::date(int year, const char* month, int day) :
 	day_(static_cast<uint_fast16_t>(day)),
 	month_(ch_month_to_int16(month)),
 	year_(static_cast<uint_fast16_t>(year)) {}
@@ -79,75 +79,78 @@ string date::month_to_str() { return month_names()[month_ - 1]; }
 
 uint_fast16_t date::get_day() { return day_; }
 
-date date::get_data() { return *new date(year_, month_, day_); }
+date date::get_date() { return date(year_, month_, day_); }
 
 
-uint_fast16_t date::str_month_to_int16(string& month) {
+uint_fast16_t date::str_month_to_int16(const string& month) {
 	for (uint_fast16_t i = 0; i < 12; i++) { if (month == month_names()[i]) { return i + 1; } }
 	return 0;
 }
 
-uint_fast16_t date::ch_month_to_int16(char* month) {
+uint_fast16_t date::ch_month_to_int16(const char* month) {
 	auto* names = month_names();
-	for (uint_fast16_t i = 0; i < 12; i++) { if (strcmp(month, names[i].c_str()) == 0) { return i + 1; } }
+	for (uint_fast16_t i = 0; i < 12; i++) {
+		if (strcmp(month, names[i].c_str()) == 0) { return i + 1; }
+	}
+	free(names);
 	return 0;
 }
 
 
-date& date::operator=(date& right) {
-	year_ = right.get_year();
-	month_ = right.get_month();
-	day_ = right.get_day();
+date& date::operator=(const date& right) {
+	year_ = right.year_;
+	month_ = right.month_;
+	day_ = right.day_;
 	return *this;
 }
 
-ostream& operator<<(ostream& lhs, date& rhs) {
+ostream& operator<<(ostream& lhs, const date& rhs) {
 	lhs << "  ";
 	lhs.width(19);
-	lhs << to_string(rhs.get_day()) + " " + rhs.month_to_str() + " " + to_string(rhs.get_year());
+	lhs << to_string(rhs.day_) + " " + to_string(rhs.month_) + " " + to_string(rhs.year_);
 	lhs << " |";
 	return lhs;
 }
 
 date& operator>>(istream& lhs, date& v_date) {
 	int v_day, v_month, v_year;
-	cout << "Введите дату ( день.месяц.год ): ";
+	cout << "Enter the date ( day.month.year ): ";
 	while (true) {
 		try {
 			is_date(lhs, &v_year, &v_month, &v_day);
-			v_date = *new date(v_year, v_month, v_day);
+			v_date = date(v_year, v_month, v_day);
 			return v_date;
 		}
 		catch (exception_input& e) {
 			system("color 74");
-			cout << "Ошибка ввода: " << e.what() << endl;
+			cout << "Input error: " << e.what() << endl;
 			system("color 71");
-			cout << "Повторите ввод: ";
+			cout << "Try again: ";
 		}
 	}
 }
 
-bool operator==(date& lhs, date& rhs) {
-	return lhs.get_year() == rhs.get_year()
-		&& lhs.get_month() == rhs.get_month()
-		&& lhs.get_day() == rhs.get_day();
+bool operator==(const date& lhs, const date& rhs) {
+	return lhs.year_ == rhs.year_
+		&& lhs.month_ == rhs.month_
+		&& lhs.day_ == rhs.day_;
 }
 
-bool operator!=(date& lhs, date& rhs) { return !(lhs == rhs); }
+bool operator!=(const date& lhs, const date& rhs) { return !(lhs == rhs); }
 
-bool operator<(date& lhs, date& rhs) {
-	return lhs.get_year() < rhs.get_year()
+bool operator<(const date& lhs, const date& rhs) {
+	return lhs.year_ < rhs.year_
 		||
-		lhs.get_month() < rhs.get_month() &&
-		lhs.get_year() == rhs.get_year()
+		lhs.month_ < rhs.month_ &&
+		lhs.year_ == rhs.year_
 		||
-		lhs.get_day() < rhs.get_day() &&
-		lhs.get_month() == rhs.get_month() &&
-		lhs.get_year() == rhs.get_year();
+		lhs.day_ < rhs.day_ &&
+		lhs.month_ == rhs.month_ &&
+		lhs.year_ == rhs.year_;
 }
 
-bool operator<=(date& lhs, date& rhs) { return lhs < rhs || lhs == rhs; }
+bool operator<=(const date& lhs, const date& rhs) { return lhs < rhs || lhs == rhs; }
 
-bool operator>(date& lhs, date& rhs) { return !(lhs <= rhs); }
+bool operator>(const date& lhs, const date& rhs) { return !(lhs <= rhs); }
 
-bool operator>=(date& lhs, date& rhs) { return lhs > rhs || lhs == rhs; }
+bool operator>=(const date& lhs, const date& rhs) { return lhs > rhs || lhs == rhs; }

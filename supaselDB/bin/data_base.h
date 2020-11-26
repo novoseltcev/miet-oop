@@ -47,11 +47,11 @@ public:
 	
 	bool is_empty();
 
-	void push_front(T&);
+	void push_front(const T&);
 
-	void insert(int, T&);
+	void insert(int, const T&);
 
-	void push_back(T&);
+	void push_back(const T&);
 
 	void pop_front();
 
@@ -61,13 +61,13 @@ public:
 
 	bool filter_by_data(data_base&, date&, bool f(T&, date&));
 
-	void sort(bool comparator(T&, T&));
+	void sort(bool comparator(T&, T&)=sort_by_balance);
 
-
-	bool set_debtor(date&);
+	bool set_debtor(const date&);
 
 	bool search_debtor(data_base&);
 
 
-	friend data_base<T>& operator>>(std::istream&, data_base<T>&);
+
+	friend data_base<T>& operator>>(std::ifstream&, data_base<T>&);
 };

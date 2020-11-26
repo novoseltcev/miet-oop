@@ -7,9 +7,9 @@
 
 class person
 {
-	std::string surname_{};
-	std::string name_{};
-	std::string middle_name_{};
+	std::string surname_;
+	std::string name_;
+	std::string middle_name_;
 
 public:
 	person();
@@ -28,13 +28,13 @@ public:
 	std::string get_middle_name();
 
 
-	person& operator=(person&);
+	person& operator=(const person&);
 
-	friend std::ostream& operator<<(std::ostream&, person&);
+	friend std::ostream& operator<<(std::ostream&, const person&);
 
 	friend person& operator>>(std::istream&, person&);
 
-	friend bool operator==(person&, person&);
+	friend bool operator==(const person&, const person&);
 
-	friend bool operator!=(person&, person&);
+	friend bool operator!=(const person&, const person&);
 };

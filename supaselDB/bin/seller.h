@@ -8,13 +8,13 @@
 class seller : public common
 {
 protected:
-	class person person_{};
+	class person person_;
 
 public:
 
 	seller();
 
-	seller(person&, double, date&);
+	seller(const person&, double, const date&);
 
 	seller(const seller& obj);
 
@@ -32,27 +32,15 @@ public:
 
 	static void table_name(std::string&, std::string&);
 
-	seller& operator=(seller&);
+	seller& operator=(const seller&);
 
-	friend bool operator==(seller&, seller&);
+	friend bool operator==(const seller&, const seller&);
 
-	friend std::ostream& operator<<(std::ostream&, seller&);
+	friend std::ostream& operator<<(std::ostream&, const seller&);
 
 	friend seller& operator>>(std::istream&, seller&);
-};
 
-class seller_impl final : public seller
-{
-public:
-	seller_impl();
-
-	explicit seller_impl(seller& obj);
-
-
-	seller& get();
-
-
-	friend std::ostream& operator<<(std::ostream&, seller_impl&);
-
-	friend seller_impl& operator>>(std::istream&, seller_impl&);
+	friend std::ofstream& operator<<(std::ofstream&, const seller&);
+	
+	friend seller& operator>>(std::ifstream&, seller&);
 };

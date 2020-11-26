@@ -8,15 +8,15 @@ class supplier : public common
 {
 protected:
 	bool debtor_{false};
-	std::string company_{};
-	std::string address_{};
+	std::string company_;
+	std::string address_;
 	uint_fast16_t type_;
 
 public:
 
 	supplier();
 
-	supplier(std::string&, std::string&, int, double, date&);
+	supplier(std::string&, std::string&, int, double, const date&);
 
 	supplier(const supplier& obj);
 
@@ -26,10 +26,10 @@ public:
 	bool get_debtor();
 
 	std::string get_company();
-	void set_company(std::string&);
+	void set_company(const std::string&);
 
 	std::string get_address();
-	void set_address(std::string&);
+	void set_address(const std::string&);
 
 	int get_type();
 
@@ -39,13 +39,17 @@ public:
 
 	supplier& operator!();
 
-	supplier& operator=(supplier&);
+	supplier& operator=(const supplier&);
 
-	friend bool operator==(supplier&, supplier&);
+	friend bool operator==(const supplier&, const supplier&);
 
-	friend std::ostream& operator<<(std::ostream&, supplier&);
+	friend std::ostream& operator<<(std::ostream&, const supplier&);
 
 	friend supplier& operator>>(std::istream&, supplier&);
+
+	friend std::ofstream& operator<<(std::ofstream&, const supplier&);
+
+	friend supplier& operator>>(std::ifstream&, supplier&);
 };
 
 class supplier_impl final : public supplier
@@ -53,13 +57,11 @@ class supplier_impl final : public supplier
 public:
 	supplier_impl();
 
-	explicit supplier_impl(supplier& obj);
+	explicit supplier_impl(const supplier& obj);
 
 
-	supplier& get();
+	supplier get();
 
 
 	friend std::ostream& operator<<(std::ostream&, supplier_impl&);
-
-	friend supplier_impl& operator>>(std::istream&, supplier_impl&);
 };
