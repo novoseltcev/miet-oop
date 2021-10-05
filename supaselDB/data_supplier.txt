@@ -1,5 +1,0 @@
-4
-Microsoft;California;2;324324;1999;1;1;
-IBM;Dallas;1;25255.5;2021;6;25;
-BostonDynamics;Boston;1;2556.45;2012;12;12;
-Apple;NewYork;1;525.45;2018;11;2;
